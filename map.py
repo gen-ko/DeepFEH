@@ -7,7 +7,7 @@ class Map(object):
     def __init__(self, ncols=6, nrows=8, nunits_a=4, nunits_b=4):
         self.ncols = ncols
         self.nrows = nrows
-        self.is_blocked = np.array([[0,0,0,0,0,0],
+        self.map = np.array([[0,0,0,0,0,0],
                            [0, 0, 0, 0, 0, 0],
                            [0, 0, 0, 0, 0, 0],
                            [0, 0, 0, 0, 0, 0],
@@ -15,7 +15,15 @@ class Map(object):
                            [0, 0, 0, 0, 0, 0],
                            [0, 0, 0, 0, 0, 0],
                            [0, 0, 0, 0, 0, 0]])
-        self.units_a = {(0,0): None, (0,0):None, (0,0):None, (0,0): None}
-        self.units_b = {(0,0): None, (0,0):None, (0,0):None, (0,0): None}
+        self.friend_location = []
+        self.enemry_location = []
 
-    def
+    def get_action(unit):
+        
+        return
+
+    def action(action):
+        return
+
+    def render();
+        return
