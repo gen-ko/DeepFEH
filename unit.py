@@ -1,5 +1,3 @@
-
-
 class Unit(object):
     def __init__(self, team=0, unitId=0):
         self.max_hp: int = 40
