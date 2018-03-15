@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
 
+from collections import deque
+
 import numpy as np
 
 from battle import attack
 from unit import Unit
-from collections import deque
 
 
 class Map:
@@ -16,14 +17,16 @@ class Map:
         self.units = units
         self.grid = np.array([[0 for _ in range(ncols)] for _ in range(nrows)])
         self.locations = {
-        unit: [int(i / 2) if i < 4 else ncols - 1 - int((i - 4) / 2), i % 2 if i < 4 else nrows - 1 - (i - 4) % 2] for
-        i, unit in enumerate(units, 0)}
+            unit: [int(i / 2) if i < 4 else ncols - 1 - int((i - 4) / 2), i % 2 if i < 4 else nrows - 1 - (i - 4) % 2]
+        for
+            i, unit in enumerate(units, 0)}
         for x, y in self.locations.values():
             self.grid[x][y] = 1
 
     def get_action(self, unit):
         loc = self.locations[unit]
-        # get all destinations
+
+        # get all move destinations
         move_destinations = []
         queue = deque(maxlen=self.nrows * self.ncols)
         queue.append(loc, 0)
@@ -37,7 +40,7 @@ class Map:
                 if 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.move_range:
                     queue.append((x_, y_), distance + 1)
 
-        # iteration to see if there is some enemy that can attack
+        # get all attack enemies and construct possible actions
         res = []
         for move_dest in move_destinations:
             # don't attack -> des_unit is None
@@ -53,7 +56,8 @@ class Map:
         return [candidate for candidate in self.units if candidate.team != unit.team]
 
     def get_distance(self, unit_a, unit_b):
-        return abs(self.locations[unit_a][1] - self.locations[unit_b][1]) + abs(self.locations[unit_a][2] - self.locations[unit_b][2])
+        return abs(self.locations[unit_a][1] - self.locations[unit_b][1]) + abs(
+            self.locations[unit_a][2] - self.locations[unit_b][2])
 
     def action(self, action):
         # move source unit
