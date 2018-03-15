@@ -1,7 +1,8 @@
 
 
 class Unit(object):
-    def __init__(self, team=0, unitId=0):
+    def __init__(self, index=0, team=0):
+        self.index: int = index
         self.max_hp: int = 40
         self.cur_hp: int = self.max_hp
         self.atk: int = 30
