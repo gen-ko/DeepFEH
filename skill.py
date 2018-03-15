@@ -40,6 +40,9 @@ class PassiveA(Enum):
 
 class PassiveB(Enum):
     EMPTY = auto()
+    CANCEL_AFFINITY_1 = auto()
+    CANCEL_AFFINITY_2 = auto()
+    CANCEL_AFFINITY_3 = auto()
 
 
 class PassiveC(Enum):
@@ -131,4 +134,29 @@ MOVEMENT_TYPE_TO_MOVEMENT_RANGE = {
     MovementType.CAVALRY: 3,
     MovementType.ARMORED: 1,
     MovementType.FLYING: 2
+}
+
+COLOR_ADVANTAGE = {
+    (Color.RED, Color.RED): 0.0,
+    (Color.RED, Color.GREEN): 0.2,
+    (Color.RED, Color.BLUE): -0.2,
+    (Color.RED, Color.COLORLESS): 0.0,
+    (Color.GREEN, Color.RED): -0.2,
+    (Color.GREEN, Color.GREEN): 0.0,
+    (Color.GREEN, Color.BLUE): 0.2,
+    (Color.GREEN, Color.COLORLESS): 0.0,
+    (Color.BLUE, Color.RED): 0.2,
+    (Color.BLUE, Color.GREEN): -0.2,
+    (Color.BLUE, Color.BLUE): 0.0,
+    (Color.BLUE, Color.COLORLESS): 0.0,
+    (Color.COLORLESS, Color.RED): 0.0,
+    (Color.COLORLESS, Color.GREEN): 0.0,
+    (Color.COLORLESS, Color.BLUE): 0.0,
+    (Color.COLORLESS, Color.COLORLESS): 0.0
+}
+
+RAVEN_TOMES = {
+    Weapon.BLARRAVEN_PLUS,
+    Weapon.GRONNRAVEN_PLUS,
+    Weapon.RAUTHRRAVEN_PLUS
 }
