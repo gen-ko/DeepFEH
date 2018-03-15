@@ -56,6 +56,12 @@ def compute_damage(a: unit.Unit, b: unit.Unit):
 
 
 def compute_adv(a: unit.Unit, b: unit.Unit):
+    """
+    Compute weapon-type advantage factor
+    :param a: Unit, the unit initializes attack
+    :param b: Unit, the unit being attacked
+    :return: float, the adv factor
+    """
     adv = 0.0
     if a.color == unit.Color.RED:
         if b.color == unit.Color.GREEN:
