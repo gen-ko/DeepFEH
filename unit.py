@@ -1,7 +1,7 @@
 
 
 class Unit(object):
-    def __init__(self):
+    def __init__(self, team=0, unitId=0):
         self.max_hp: int = 40
         self.cur_hp: int = self.max_hp
         self.atk: int = 30
@@ -12,4 +12,6 @@ class Unit(object):
         self.attack_type: bool = 0  # 0: physical, 1: magical
         self.move_range: int = 1
         self.is_dead: bool = 0
+        self.color: int = 0  # 0: red, 1: green, 2: blue
+        self.team: int = team
         return

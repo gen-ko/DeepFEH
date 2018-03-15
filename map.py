@@ -2,6 +2,7 @@
 
 
 import numpy as np
+from unit import Unit
 
 class Map(object):
     def __init__(self, ncols=6, nrows=8, nunits_a=4, nunits_b=4):
@@ -27,3 +28,4 @@ class Map(object):
 
     def render();
         return
+
