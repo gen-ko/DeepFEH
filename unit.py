@@ -21,10 +21,10 @@ class Unit(object):
         self.index: int = index
         self.max_hp: int = max_hp
         self.cur_hp: int = self.max_hp
-        self.atk: int = 30
-        self.spd: int = 36
-        self.defence: int = 25
-        self.res: int = 26
+        self.atk: int = atk
+        self.spd: int = spd
+        self.defence: int = defence
+        self.res: int = res
 
         self.movement_type = movement_type
         self.weapon = weapon
@@ -40,6 +40,9 @@ class Unit(object):
         self.attack_range = skill.WEAPON_TYPE_TO_ATTACK_RANGE[self.weapon_type]
         self.damage_type = skill.WEAPON_TYPE_TO_DAMAGE_TYPE[self.weapon_type]
         self.movement_range = skill.MOVEMENT_TYPE_TO_MOVEMENT_RANGE[self.movement_type]
+
+        self.distant_counter =
+
 
         self.is_dead: bool = 0
         self.team: int = team

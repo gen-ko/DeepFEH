@@ -3,14 +3,16 @@ from unit import Unit
 import skill
 
 def attack(a: Unit, b: Unit):
-    if a.damage_type == 0:
-        b.cur_hp -= max(0, (a.atk - b.defence))
-    else:
-        b.cur_hp -= max(0, (a.atk - b.res))
+
+    dmg = compute_damage(a, b)
     if b.cur_hp <= 0:
         b.cur_hp = 0
         b.is_dead = 1
-        return
+
+    if b.distant_counter:
+        
+
+
 
     # counter-attack
     if b.damage_type == 0:

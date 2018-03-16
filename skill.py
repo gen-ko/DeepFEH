@@ -36,6 +36,7 @@ class PassiveA(Enum):
     TRIANGLE_ADEPT_1 = auto()
     TRIANGLE_ADEPT_2 = auto()
     TRIANGLE_ADEPT_3 = auto()
+    DISTANT_COUNTER = auto()
 
 
 class PassiveB(Enum):
