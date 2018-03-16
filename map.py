@@ -15,20 +15,24 @@ class Map(object):
 
     def get_action(self, unit):
         # dfs get all possible location that can go
-        def dfs(i, j, loc, row, col, res):
-            if i >= row or j >= col:
+        def dfs(i, j, row, col, res, steps):
+            if i >= row or j >= col or steps == 0:
                 return
+            if map_set.contains()
             res.append([i,j])
-            dfs(i+1,j,row,col,res)
-            dfs(i-1,j,row,col,res)
-            dfs(i,j+1,row,col,res)
-            dfs(i,j-1,row,col,res)
+            dfs(i+1,j,row,col,res,steps-1)
+            dfs(i-1,j,row,col,res,steps-1)
+            dfs(i,j+1,row,col,res,steps-1)
+            dfs(i,j-1,row,col,res,steps-1)
             return
         res = []
         loc = self.location[unit]
-        dfs(loc[0],loc[1],self.nrows, self.ncols)
+        steps = unit.move_range
+        map_set = set()
+        map_set.add(loc)
+        dfs(loc[0], loc[1], self.nrows, self.ncols, res, steps, map_set)
         # iteration to see if there is some enemy that can attack
-        
+
 
         return res
 
