@@ -39,8 +39,6 @@ class Map:
                 x_, y_ = x + dx[k], y + dy[k]
                 if (x_, y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.move_range and self.grid[x_][y_] != 1:
                     queue.append(([x_, y_], distance + 1))
-
-        print(move_destinations)
         # get all attack enemies and construct possible actions
         res = []
         for move_dest in move_destinations:
@@ -68,11 +66,15 @@ class Map:
             self.locations[action.src_unit] = x_, y_
             self.grid[x][y] = 0
             self.grid[x_][y_] = 1
-            print()
+            if VERBOSE:
+                print("unit " + str(action.src_unit.index) + " move to " + str(x_) + str(y_))
 
         # attack enemy
         if action.des_unit is not None:
             attack(action.src_unit, action.des_unit)
+            if VERBOSE:
+                print("unit " + str(action.src_unit.index) + " attack " + str(action.des_unit.index))
+
 
             # delete from locations
             if action.src_unit.is_dead:
