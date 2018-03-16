@@ -8,6 +8,7 @@ import numpy as np
 from battle import attack
 from action import Action
 
+VERBOSE = True
 
 class Map:
     def __init__(self, nrows=8, ncols=6, units=None):
@@ -67,6 +68,7 @@ class Map:
             self.locations[action.src_unit] = x_, y_
             self.grid[x][y] = 0
             self.grid[x_][y_] = 1
+            print()
 
         # attack enemy
         if action.des_unit is not None:
@@ -82,6 +84,10 @@ class Map:
                 x, y = self.locations[action.des_unit]
                 del self.locations[action.des_unit]
                 self.grid[x][y] = 0
+
+    def __str__(self):
+        print("Map is \n")
+        print(self.grid)
 
     def render(self):
         print("Vacancy grid is ")
