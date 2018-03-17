@@ -1,5 +1,6 @@
 
 from enum import Enum
+
 import skill
 
 
@@ -7,6 +8,7 @@ class Unit(object):
     cnt = 0
 
     def __init__(self, index=0, team=0,
+
                  max_hp: int = 40,
                  atk: int = 30,
                  spd: int = 36,
@@ -22,9 +24,11 @@ class Unit(object):
                  special=skill.Special.EMPTY):
         self.id = Unit.cnt
         Unit.cnt += 1
+
         self.index: int = index
         self.max_hp: int = max_hp
         self.cur_hp: int = self.max_hp
+
         self.atk: int = atk
         self.spd: int = spd
         self.defence: int = defence
@@ -52,4 +56,6 @@ class Unit(object):
         self.team: int = team
         return
 
+    def get_attributes(self):
+        return self.max_hp, self.cur_hp, self.atk, self.spd, self.defence, self.res, self.attack_range, self.move_range
 
