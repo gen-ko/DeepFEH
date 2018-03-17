@@ -37,7 +37,7 @@ class Map:
             for k in range(4):
                 x_, y_ = x + dx[k], y + dy[k]
                 if (x_,
-                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.move_range and \
+                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols - 1 and distance + 1 <= unit.move_range and \
                         self.grid[x_][y_] != 1:
                     queue.append(([x_, y_], distance + 1))
 

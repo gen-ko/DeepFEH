@@ -34,4 +34,4 @@ class Simulator:
         return positions, attributes, action_space
 
     def opponent_move(self):
-        pass
+        print("Opponent move")

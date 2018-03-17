@@ -30,10 +30,10 @@ class Unit(object):
         self.spd: int = 36
         self.defence: int = 25
         self.res: int = 26
-        self.attack_range: int = 1
+        self.attack_range: int = 2
         self.damage_type = DamageType.PHYSICAL  # 0: physical, 1: magical
         self.weapon_type = skill.WeaponType.RED_SWORD
-        self.move_range: int = 1
+        self.move_range: int = 4
         self.is_dead: bool = 0
         self.color = Color.RED  # 0: red, 1: green, 2: blue
         self.team: int = team
