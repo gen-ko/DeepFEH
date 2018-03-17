@@ -2,16 +2,14 @@
 
 
 from collections import deque
-
 import numpy as np
-
-from battle import attack
 from action import Action
+from battle import attack
 
-VERBOSE = True
 
 class Map:
     def __init__(self, nrows=8, ncols=6, units=None):
+        self.verbose = True
         self.nrows = nrows
         self.ncols = ncols
         self.units = units
@@ -37,7 +35,9 @@ class Map:
             dy = [1, -1, 0, 0]
             for k in range(4):
                 x_, y_ = x + dx[k], y + dy[k]
-                if (x_, y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.movement_range and self.grid[x_][y_] != 1:
+                if (x_,
+                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols - 1 and distance + 1 <= unit.move_range and \
+                        self.grid[x_][y_] != 1:
                     queue.append(([x_, y_], distance + 1))
 
         # get all attack enemies and construct possible actions
@@ -45,16 +45,28 @@ class Map:
         for move_dest in move_destinations:
             # don't attack -> des_unit is None
             res.append(Action(unit, move_dest, None))
-            for enemy in self.get_enemies(unit):
-                if self.get_distance(move_dest, self.locations[enemy]) <= unit.attack_range:
+            for enemy in self._get_enemies(unit):
+                if self._get_distance(move_dest, self.locations[enemy]) <= unit.attack_range:
                     # attack -> des_uniut is enemy
                     res.append(Action(unit, move_dest, enemy))
         return res
 
-    def get_enemies(self, unit):
+    def _get_enemies(self, unit):
         return [candidate for candidate in self.units if candidate.team != unit.team]
 
-    def get_distance(self, pos_a, pos_b):
+    def get_locations(self):
+        friends_map = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
+        friends = [position for unit, position in self.locations.items() if unit.team == 0]
+        for x, y in friends:
+            friends_map[x][y] = 1
+        enemy_map = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
+        enemies = [position for unit, position in self.locations.items() if unit.team == 1]
+        for x, y in enemies:
+            enemy_map[x][y] = 1
+        return friends_map, enemy_map
+
+    @staticmethod
+    def _get_distance(pos_a, pos_b):
         return abs(pos_a[0] - pos_b[0]) + abs(pos_a[1] - pos_b[1])
 
     def action(self, action):
@@ -65,13 +77,13 @@ class Map:
             self.locations[action.src_unit] = x_, y_
             self.grid[x][y] = 0
             self.grid[x_][y_] = 1
-            if VERBOSE:
+            if self.verbose:
                 print("unit " + str(action.src_unit.index) + " move to " + str(x_) + "," + str(y_))
 
         # attack enemy
         if action.des_unit is not None:
             attack(action.src_unit, action.des_unit)
-            if VERBOSE:
+            if self.verbose:
                 print("unit " + str(action.src_unit.index) + " attack " + str(action.des_unit.index))
 
 
@@ -86,6 +98,9 @@ class Map:
                 del self.locations[action.des_unit]
                 self.grid[x][y] = 0
 
+    def set_verbose(self, v):
+        self.verbose = v
+        
     def __str__(self):
         return(str(self.grid))
 
