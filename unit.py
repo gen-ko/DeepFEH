@@ -1,4 +1,5 @@
 from enum import Enum
+
 import skill
 
 
@@ -12,15 +13,16 @@ class DamageType(Enum):
     PHYSICAL = 0
     MAGICAL = 1
 
+
 class Unit(object):
     def __init__(self, index=0, team=0,
-                 skill_a = skill.PassiveA.EMPTY,
-                 skill_b = skill.PassiveB.EMPTY,
-                 skill_c = skill.PassiveC.EMPTY,
-                 skill_s = skill.PassiveS.EMPTY,
-                 skill_weapon = skill.Weapon.EMPTY,
-                 skill_support = skill.Support.EMPTY,
-                 skill_special = skill.Special.EMPTY):
+                 skill_a=skill.PassiveA.EMPTY,
+                 skill_b=skill.PassiveB.EMPTY,
+                 skill_c=skill.PassiveC.EMPTY,
+                 skill_s=skill.PassiveS.EMPTY,
+                 skill_weapon=skill.Weapon.EMPTY,
+                 skill_support=skill.Support.EMPTY,
+                 skill_special=skill.Special.EMPTY):
         self.index: int = index
         self.max_hp: int = 40
         self.cur_hp: int = self.max_hp
@@ -43,3 +45,6 @@ class Unit(object):
         self.skill_support = skill_support
         self.skill_special = skill_special
         return
+
+    def get_attributes(self):
+        return self.max_hp, self.cur_hp, self.atk, self.spd, self.defence, self.res, self.attack_range, self.move_range
