@@ -37,19 +37,18 @@ class Map:
             dy = [1, -1, 0, 0]
             for k in range(4):
                 x_, y_ = x + dx[k], y + dy[k]
-                if (x_, y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.move_range and self.grid[x_][y_] != 1:
+                if (x_, y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.movement_range and self.grid[x_][y_] != 1:
                     queue.append(([x_, y_], distance + 1))
+
         # get all attack enemies and construct possible actions
         res = []
         for move_dest in move_destinations:
             # don't attack -> des_unit is None
             res.append(Action(unit, move_dest, None))
-            print(Action(unit, move_dest, None))
             for enemy in self.get_enemies(unit):
                 if self.get_distance(move_dest, self.locations[enemy]) <= unit.attack_range:
                     # attack -> des_uniut is enemy
                     res.append(Action(unit, move_dest, enemy))
-
         return res
 
     def get_enemies(self, unit):
@@ -67,7 +66,7 @@ class Map:
             self.grid[x][y] = 0
             self.grid[x_][y_] = 1
             if VERBOSE:
-                print("unit " + str(action.src_unit.index) + " move to " + str(x_) + str(y_))
+                print("unit " + str(action.src_unit.index) + " move to " + str(x_) + "," + str(y_))
 
         # attack enemy
         if action.des_unit is not None:
@@ -88,8 +87,7 @@ class Map:
                 self.grid[x][y] = 0
 
     def __str__(self):
-        print("Map is \n")
-        print(self.grid)
+        return(str(self.grid))
 
     def render(self):
         print("Vacancy grid is ")

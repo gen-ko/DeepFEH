@@ -1,9 +1,10 @@
-
 from enum import Enum
 import skill
 
 
 class Unit(object):
+    cnt = 0
+
     def __init__(self, index=0, team=0,
                  max_hp: int = 40,
                  atk: int = 30,
@@ -18,6 +19,8 @@ class Unit(object):
                  weapon=skill.Weapon.RUBY_SWORD_PLUS,
                  support=skill.Support.EMPTY,
                  special=skill.Special.EMPTY):
+        self.id = Unit.cnt
+        Unit.cnt += 1
         self.index: int = index
         self.max_hp: int = max_hp
         self.cur_hp: int = self.max_hp
@@ -41,7 +44,7 @@ class Unit(object):
         self.damage_type = skill.WEAPON_TYPE_TO_DAMAGE_TYPE[self.weapon_type]
         self.movement_range = skill.MOVEMENT_TYPE_TO_MOVEMENT_RANGE[self.movement_type]
 
-        self.distant_counter =
+
 
 
         self.is_dead: bool = 0

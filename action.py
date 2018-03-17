@@ -5,4 +5,4 @@ class Action:
         self.des_unit = des_unit
 
     def __str__(self):
-        return "src_Id is {}, destination is {}, attack Id is {}".format(self.src_unit.unitId, self.destination, self.des_unit.unitId if self.des_unit else None)
+        return "src_Id is {}, destination is {}, attack Id is {}".format(self.src_unit.index, self.destination, self.des_unit.index if self.des_unit else None)
