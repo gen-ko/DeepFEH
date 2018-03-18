@@ -13,6 +13,7 @@ class Map:
         self.nrows = nrows
         self.ncols = ncols
         self.units = units
+        self.done = False
         self.grid = np.array([[0 for _ in range(ncols)] for _ in range(nrows)])
         self.locations = {
             unit: [i % 2 if i < 4 else nrows - 1 - (i - 4) % 2, int(i / 2) if i < 4 else ncols - 1 - int((i - 4) / 2)]
@@ -36,7 +37,7 @@ class Map:
             for k in range(4):
                 x_, y_ = x + dx[k], y + dy[k]
                 if (x_,
-                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols - 1 and distance + 1 <= unit.move_range and \
+                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols - 1 and distance + 1 <= unit.movement_range and \
                         self.grid[x_][y_] != 1:
                     queue.append(([x_, y_], distance + 1))
 
@@ -51,19 +52,23 @@ class Map:
                     res.append(Action(unit, move_dest, enemy))
         return res
 
+    # modified unit to location because if return element in unit, the for loop just above will have error
     def _get_enemies(self, unit):
-        return [candidate for candidate in self.units if candidate.team != unit.team]
+        a = [candidate for candidate in self.locations if candidate.team != unit.team]
+        return a
+
+    def _get_friendly(self, unit):
+        return [candidate for candidate in self.locations if candidate.team == unit.team]
 
     def get_locations(self):
-        friends_map = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
+        loc = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
         friends = [position for unit, position in self.locations.items() if unit.team == 0]
-        for x, y in friends:
-            friends_map[x][y] = 1
-        enemy_map = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
         enemies = [position for unit, position in self.locations.items() if unit.team == 1]
+        for x, y in friends:
+            loc[x][y] = 1
         for x, y in enemies:
-            enemy_map[x][y] = 1
-        return friends_map, enemy_map
+            loc[x][y] = 1
+        return loc
 
     @staticmethod
     def _get_distance(pos_a, pos_b):
@@ -80,23 +85,31 @@ class Map:
             if self.verbose:
                 print("unit " + str(action.src_unit.index) + " move to " + str(x_) + "," + str(y_))
 
+        dead = None
         # attack enemy
         if action.des_unit is not None:
             attack(action.src_unit, action.des_unit)
             if self.verbose:
                 print("unit " + str(action.src_unit.index) + " attack " + str(action.des_unit.index))
 
-
             # delete from locations
             if action.src_unit.is_dead:
                 x, y = self.locations[action.src_unit]
                 del self.locations[action.src_unit]
                 self.grid[x][y] = 0
+                dead = action.src_unit
 
             if action.des_unit.is_dead:
                 x, y = self.locations[action.des_unit]
                 del self.locations[action.des_unit]
                 self.grid[x][y] = 0
+                dead = action.des_unit
+
+        done = False
+        if len(self._get_friendly(action.src_unit)) == 0 or len(self._get_enemies(action.src_unit)) == 0:
+            done = True
+        return self.grid, done, dead
+
 
     def set_verbose(self, v):
         self.verbose = v
