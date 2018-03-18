@@ -2,7 +2,9 @@
 
 
 from collections import deque
+
 import numpy as np
+
 from action import Action
 from battle import attack
 
@@ -29,11 +31,11 @@ class Map:
         queue = deque(maxlen=self.nrows * self.ncols)
         queue.append((loc, 0))
         move_destinations.add(tuple(loc))
+        dx = [0, 0, 1, -1]
+        dy = [1, -1, 0, 0]
         while queue:
             (x, y), distance = queue.popleft()
             move_destinations.add((x, y))
-            dx = [0, 0, 1, -1]
-            dy = [1, -1, 0, 0]
             for k in range(4):
                 x_, y_ = x + dx[k], y + dy[k]
                 if (x_,
@@ -109,12 +111,11 @@ class Map:
             done = True
         return self.grid, done, dead
 
-
     def set_verbose(self, v):
         self.verbose = v
-        
+
     def __str__(self):
-        return(str(self.grid))
+        return str(self.grid)
 
     def render(self):
         print("Vacancy grid is ")

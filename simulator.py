@@ -1,14 +1,18 @@
+import random
+import sys
+
 from map import Map
 from unit import Unit
-import sys
-import random
+
 """
 Simple assumption:
     Team0 is always friendly and Team1 is enemy.
     Team0 will always be offensive
-    Enemy has random stratgy
+    Enemy has random strategy
     Enemy will act from first role to last role in sequence
 """
+
+
 class Simulator:
     def __init__(self, nrows=8, ncols=6):
         self.nrows = nrows
@@ -80,7 +84,7 @@ class Simulator:
         """
         space = []
         for i, val in enumerate(self.friendly_round):
-            tmp_space = self.map.get_action_space(val);
+            tmp_space = self.map.get_action_space(val)
             space.extend(tmp_space)
         return space
 
@@ -131,19 +135,21 @@ class Simulator:
 def main(argv):
     simu = Simulator()
     for i in range(8):
-        simu.create_unit(i, int(i/4))
+        simu.create_unit(i, int(i / 4))
     s, r, done = simu.reset()
-    print_info(s,r,done)
+    print_info(s, r, done)
     while not done:
         a = simu.get_action_space()
         a = random.choice(a)
         s, r, done = simu.step(a)
         print_info(s, r, done)
 
-def print_info(s,r,done):
+
+def print_info(s, r, done):
     print(s)
     print(r)
     print(done)
+
 
 if __name__ == "__main__":
     main(sys.argv)
