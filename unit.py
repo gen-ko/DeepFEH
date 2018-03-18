@@ -1,4 +1,3 @@
-
 from enum import Enum
 
 import skill
@@ -57,5 +56,4 @@ class Unit(object):
         return
 
     def get_attributes(self):
-        return self.max_hp, self.cur_hp, self.atk, self.spd, self.defence, self.res, self.attack_range, self.move_range
-
+        return self.max_hp, self.cur_hp, self.atk, self.spd, self.defence, self.res, self.attack_range, self.movement_range

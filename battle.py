@@ -9,11 +9,6 @@ def attack(a: Unit, b: Unit):
         b.cur_hp = 0
         b.is_dead = 1
 
-    if b.distant_counter:
-        
-
-
-
     # counter-attack
     if b.damage_type == 0:
         a.cur_hp -= max(0, (b.atk - a.defence))
