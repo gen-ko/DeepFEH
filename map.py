@@ -2,19 +2,18 @@
 
 
 from collections import deque
-
 import numpy as np
-
-from battle import attack
 from action import Action
+from battle import attack
 
-VERBOSE = True
 
 class Map:
     def __init__(self, nrows=8, ncols=6, units=None):
+        self.verbose = True
         self.nrows = nrows
         self.ncols = ncols
         self.units = units
+        self.done = False
         self.grid = np.array([[0 for _ in range(ncols)] for _ in range(nrows)])
         self.locations = {
             unit: [i % 2 if i < 4 else nrows - 1 - (i - 4) % 2, int(i / 2) if i < 4 else ncols - 1 - int((i - 4) / 2)]
@@ -37,27 +36,41 @@ class Map:
             dy = [1, -1, 0, 0]
             for k in range(4):
                 x_, y_ = x + dx[k], y + dy[k]
-                if (x_, y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols and distance + 1 <= unit.move_range and self.grid[x_][y_] != 1:
+                if (x_,
+                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols - 1 and distance + 1 <= unit.movement_range and \
+                        self.grid[x_][y_] != 1:
                     queue.append(([x_, y_], distance + 1))
 
-        print(move_destinations)
         # get all attack enemies and construct possible actions
         res = []
         for move_dest in move_destinations:
             # don't attack -> des_unit is None
             res.append(Action(unit, move_dest, None))
-            print(Action(unit, move_dest, None))
-            for enemy in self.get_enemies(unit):
-                if self.get_distance(move_dest, self.locations[enemy]) <= unit.attack_range:
+            for enemy in self._get_enemies(unit):
+                if self._get_distance(move_dest, self.locations[enemy]) <= unit.attack_range:
                     # attack -> des_uniut is enemy
                     res.append(Action(unit, move_dest, enemy))
-
         return res
 
-    def get_enemies(self, unit):
-        return [candidate for candidate in self.units if candidate.team != unit.team]
+    # modified unit to location because if return element in unit, the for loop just above will have error
+    def _get_enemies(self, unit):
+        return [candidate for candidate in self.locations if candidate.team != unit.team]
 
-    def get_distance(self, pos_a, pos_b):
+    def _get_friendly(self, unit):
+        return [candidate for candidate in self.locations if candidate.team == unit.team]
+
+    def get_locations(self):
+        loc = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
+        friends = [position for unit, position in self.locations.items() if unit.team == 0]
+        enemies = [position for unit, position in self.locations.items() if unit.team == 1]
+        for x, y in friends:
+            loc[x][y] = 1
+        for x, y in enemies:
+            loc[x][y] = 1
+        return loc
+
+    @staticmethod
+    def _get_distance(pos_a, pos_b):
         return abs(pos_a[0] - pos_b[0]) + abs(pos_a[1] - pos_b[1])
 
     def action(self, action):
@@ -68,26 +81,40 @@ class Map:
             self.locations[action.src_unit] = x_, y_
             self.grid[x][y] = 0
             self.grid[x_][y_] = 1
-            print()
+            if self.verbose:
+                print("unit " + str(action.src_unit.index) + " move to " + str(x_) + "," + str(y_))
 
+        dead = None
         # attack enemy
         if action.des_unit is not None:
             attack(action.src_unit, action.des_unit)
+            if self.verbose:
+                print("unit " + str(action.src_unit.index) + " attack " + str(action.des_unit.index))
 
             # delete from locations
             if action.src_unit.is_dead:
                 x, y = self.locations[action.src_unit]
                 del self.locations[action.src_unit]
                 self.grid[x][y] = 0
+                dead = action.src_unit
 
             if action.des_unit.is_dead:
                 x, y = self.locations[action.des_unit]
                 del self.locations[action.des_unit]
                 self.grid[x][y] = 0
+                dead = action.des_unit
 
+        done = False
+        if len(self._get_friendly(action.src_unit)) == 0 or len(self._get_enemies(action.src_unit)) == 0:
+            done = True
+        return self.grid, done, dead
+
+
+    def set_verbose(self, v):
+        self.verbose = v
+        
     def __str__(self):
-        print("Map is \n")
-        print(self.grid)
+        return(str(self.grid))
 
     def render(self):
         print("Vacancy grid is ")
