@@ -2,6 +2,7 @@ from map import Map
 from unit import Unit
 import sys
 import random
+import copy
 """
 Simple assumption:
     Team0 is always friendly and Team1 is enemy.
@@ -25,7 +26,7 @@ class Simulator:
         """
         unit = Unit(id, team)
         self.units.append(unit)
-        self.units_backup = self.units
+        self.units_backup.append(copy.deepcopy(unit))
         if team == 0:
             self.friendly_round.append(unit)
         if team == 1:
@@ -35,7 +36,7 @@ class Simulator:
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
-        self.units = self.units_backup
+        self.units = copy.deepcopy(self.units_backup)
         self.map = Map(self.nrows, self.ncols, self.units)
         loc = self.map.get_locations()
 
@@ -67,11 +68,11 @@ class Simulator:
                 reward = 100
                 print("You win, you rock")
             return loc, reward, done
-        self.update_list(dead)
+        self._update_list(dead)
 
         # if friendly units finish moveing, let enemy move
         if len(self.friendly_round) == 0:
-            loc, reward, done = self.opponent_move()
+            loc, reward, done = self._opponent_move()
         return loc, reward, done
 
     def get_action_space(self):
@@ -105,7 +106,7 @@ class Simulator:
                     reward = 100
                     print("You win, you rock")
                 return grid, reward, done
-            self.update_list(dead)
+            self._update_list(dead)
 
         # refill the friendly round list
         for i, val in enumerate(self.units):
@@ -133,12 +134,20 @@ def main(argv):
     for i in range(8):
         simu.create_unit(i, int(i/4))
     s, r, done = simu.reset()
-    print_info(s,r,done)
     while not done:
         a = simu.get_action_space()
         a = random.choice(a)
         s, r, done = simu.step(a)
-        print_info(s, r, done)
+        # print_info(s, r, done)
+    print_info(s, r, done)
+    s, r, done = simu.reset()
+
+    while not done:
+        a = simu.get_action_space()
+        a = random.choice(a)
+        s, r, done = simu.step(a)
+        # print_info(s, r, done)
+    print_info(s, r, done)
 
 def print_info(s,r,done):
     print(s)
