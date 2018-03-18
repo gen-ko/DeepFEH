@@ -84,7 +84,7 @@ class Simulator:
             space.extend(tmp_space)
         return space
 
-    def _opponent_move(self):
+    def opponent_move(self):
         """
         stupid opponent moves
         """
@@ -113,7 +113,7 @@ class Simulator:
                 self.friendly_round.append(val)
         return grid, reward, done
 
-    def _update_list(self, dead):
+    def update_list(self, dead):
         """
         update the list to remove the dead unit
         """
