@@ -14,14 +14,15 @@ from simulator import Simulator
 class QNetwork:
 
     def __init__(self, ns, na, model_name, learning_rate):
-        # # linear model
-        # if model_name == "linear":
-        #     print("Using linear model")
-        #     self.model = Sequential([
-        #         Dense(na, input_shape=(ns,))
-        #     ])
-        #     self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
-        #
+        self.model = None
+        # linear model
+        if model_name == "linear":
+            print("Using linear model")
+            self.model = Sequential([
+                Dense(1, input_shape=(ns+ na,))
+            ])
+            self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
+
         # MLP
         if model_name == "MLP":
             print("Using MLP model")
@@ -192,14 +193,14 @@ class DQN_Agent:
 
                     s = s_
                     iteration += 1
-                    # test
-                    if iteration % interval_iteration == 0:
-                        performance.append((iteration, self.test(iteration, test_size=test_size)))
-                        break
                     # save model
                     if iteration % int(max_iteration / 3) == 0:
                         self.net.save_model(self.identifier, iteration)
                         dump(performance, open('./model/{}{}.p'.format(iteration, self.identifier), 'wb'))
+                        break
+                    # test
+                    if iteration % interval_iteration == 0:
+                        performance.append((iteration, self.test(iteration, test_size=test_size)))
                         break
                     if done:
                         # print("hold for {} sec".format(i - start))
@@ -222,6 +223,7 @@ class DQN_Agent:
     def test(self, iteration, test_size):
         rewards = 0
         count = 0
+        win_round = 0
         for _ in range(test_size):
             s2, _, _ = self.simu.reset()
             while True:
@@ -232,10 +234,13 @@ class DQN_Agent:
                 rewards += r2
                 count += 1
                 if done2:
+                    if r2 == 100:
+                        win_round += 1
                     break
         print("The average reward of {} iteration is {}".format(iteration, rewards / test_size))
         print("The average iterations taken per episode is {}".format(count / test_size))
-        return rewards / test_size, count / test_size
+        print("The win rate of this model is {}".format(win_round / test_size))
+        return rewards / test_size, count / test_size, win_round / test_size
 
 
 def main(identifier, model_name, max_iteration, epsilon, epsilon_decay, epsilon_min, interval_iteration, gamma,

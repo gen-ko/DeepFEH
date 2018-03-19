@@ -61,7 +61,7 @@ class Simulator:
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
-        reward = 0
+        reward = -1
         unit = a.src_unit
         self.friendly_round.remove(unit)
         loc, done, dead = self.map.action(a)
@@ -100,7 +100,7 @@ class Simulator:
         """
         # opponent moves randomly
         grid = []
-        reward = 0
+        reward = -1
         done = False
         for i, val in enumerate(self.enemy_round):
             a = self.map.get_action_space(val)

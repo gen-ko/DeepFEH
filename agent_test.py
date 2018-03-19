@@ -13,6 +13,7 @@ for i in range(8):
     simu.create_unit(i, int(i / 4))
 rewards = 0
 count = 0
+win_round = 0
 for _ in range(test_size):
     s2, _, _ = simu.reset()
     while True:
@@ -24,6 +25,9 @@ for _ in range(test_size):
         rewards += r2
         count += 1
         if done2:
+            if r2 == 100:
+                win_round += 1
             break
 print("The average reward of model {} iteration is {}".format(name, rewards / test_size))
 print("The average iterations taken per episode is {}".format(count / test_size))
+print("The win rate of this model is {}".format(win_round / test_size))
