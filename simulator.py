@@ -3,7 +3,9 @@ import sys
 
 from map import Map
 from unit import Unit
-
+import sys
+import random
+import copy
 """
 Simple assumption:
     Team0 is always friendly and Team1 is enemy.
@@ -14,12 +16,13 @@ Simple assumption:
 
 
 class Simulator:
-    def __init__(self, nrows=8, ncols=6):
+    def __init__(self, nrows=8, ncols=6, verbose=True):
+        self.verbose = verbose
         self.nrows = nrows
         self.ncols = ncols
         self.units = []
         self.units_backup = []
-        self.map = self.map = Map(self.nrows, self.ncols, self.units)
+        self.map = Map(self.nrows, self.ncols, self.units, self.verbose)
         self.friendly_round = []
         self.enemy_round = []
 
@@ -29,7 +32,7 @@ class Simulator:
         """
         unit = Unit(id, team)
         self.units.append(unit)
-        self.units_backup = self.units
+        self.units_backup.append(copy.deepcopy(unit))
         if team == 0:
             self.friendly_round.append(unit)
         if team == 1:
@@ -39,8 +42,8 @@ class Simulator:
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
-        self.units = self.units_backup
-        self.map = Map(self.nrows, self.ncols, self.units)
+        self.units = copy.deepcopy(self.units_backup)
+        self.map = Map(self.nrows, self.ncols, self.units, self.verbose)
         loc = self.map.get_locations()
 
         # refill the round list
@@ -63,19 +66,22 @@ class Simulator:
         self.friendly_round.remove(unit)
         loc, done, dead = self.map.action(a)
         if done:
-            print("last dead unit is {}".format(dead.index))
+            if self.verbose:
+                print("last dead unit is {}".format(dead.index))
             if dead.team == 0:
                 reward = -100
-                print("Enemy wins, you suck")
+                if self.verbose:
+                    print("Enemy wins, you suck")
             else:
                 reward = 100
-                print("You win, you rock")
+                if self.verbose:
+                    print("You win, you rock")
             return loc, reward, done
-        self.update_list(dead)
+        self._update_list(dead)
 
         # if friendly units finish moveing, let enemy move
         if len(self.friendly_round) == 0:
-            loc, reward, done = self.opponent_move()
+            loc, reward, done = self._opponent_move()
         return loc, reward, done
 
     def get_action_space(self):
@@ -88,28 +94,31 @@ class Simulator:
             space.extend(tmp_space)
         return space
 
-    def opponent_move(self):
+    def _opponent_move(self):
         """
         stupid opponent moves
         """
         # opponent moves randomly
         grid = []
-        reward = 0
+        reward = -1
         done = False
         for i, val in enumerate(self.enemy_round):
             a = self.map.get_action_space(val)
             a = random.choice(a)
             grid, done, dead = self.map.action(a)
             if done:
-                print("last dead unit is {} ".format(dead.index))
+                if self.verbose:
+                    print("last dead unit is {} ".format(dead.index))
                 if dead.team == 0:
                     reward = -100
-                    print("Enemy wins, you suck")
+                    if self.verbose:
+                        print("Enemy wins, you suck")
                 else:
                     reward = 100
-                    print("You win, you rock")
+                    if self.verbose:
+                        print("You win, you rock")
                 return grid, reward, done
-            self.update_list(dead)
+            self._update_list(dead)
 
         # refill the friendly round list
         for i, val in enumerate(self.units):
@@ -117,7 +126,7 @@ class Simulator:
                 self.friendly_round.append(val)
         return grid, reward, done
 
-    def update_list(self, dead):
+    def _update_list(self, dead):
         """
         update the list to remove the dead unit
         """
@@ -137,12 +146,20 @@ def main(argv):
     for i in range(8):
         simu.create_unit(i, int(i / 4))
     s, r, done = simu.reset()
-    print_info(s, r, done)
     while not done:
         a = simu.get_action_space()
         a = random.choice(a)
         s, r, done = simu.step(a)
-        print_info(s, r, done)
+        # print_info(s, r, done)
+    print_info(s, r, done)
+    s, r, done = simu.reset()
+
+    while not done:
+        a = simu.get_action_space()
+        a = random.choice(a)
+        s, r, done = simu.step(a)
+        # print_info(s, r, done)
+    print_info(s, r, done)
 
 
 def print_info(s, r, done):

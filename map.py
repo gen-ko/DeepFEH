@@ -10,8 +10,8 @@ from battle import attack
 
 
 class Map:
-    def __init__(self, nrows=8, ncols=6, units=None):
-        self.verbose = True
+    def __init__(self, nrows=8, ncols=6, units=None, verbose=True):
+        self.verbose = verbose
         self.nrows = nrows
         self.ncols = ncols
         self.units = units
@@ -56,8 +56,7 @@ class Map:
 
     # modified unit to location because if return element in unit, the for loop just above will have error
     def _get_enemies(self, unit):
-        a = [candidate for candidate in self.locations if candidate.team != unit.team]
-        return a
+        return [candidate for candidate in self.locations if candidate.team != unit.team]
 
     def _get_friendly(self, unit):
         return [candidate for candidate in self.locations if candidate.team == unit.team]

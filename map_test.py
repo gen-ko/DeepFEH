@@ -2,7 +2,7 @@ from map import Map, Action
 from unit import Unit
 
 units = [Unit(i, int(i / 4)) for i in range(8)]
-m = Map(8, 6, units)
+m = Map(8, 6, units, True)
 m.render()
 
 # # test get_distance

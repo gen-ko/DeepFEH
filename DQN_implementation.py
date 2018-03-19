@@ -14,14 +14,6 @@ from simulator import Simulator
 class QNetwork:
 
     def __init__(self, ns, na, model_name, learning_rate):
-        self.model = Sequential([
-                    Dense(30, input_shape=(ns + na,), activation='relu'),
-                    Dense(30, input_shape=(30,), activation='relu'),
-                    Dense(30, input_shape=(30,), activation='relu'),
-                    Dense(30, input_shape=(30,), activation='relu'),
-                    Dense(1, input_shape=(30,))
-        ])
-        self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
         # # linear model
         # if model_name == "linear":
         #     print("Using linear model")
@@ -30,22 +22,22 @@ class QNetwork:
         #     ])
         #     self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
         #
-        # # MLP
-        # if model_name == "MLP":
-        #     print("Using MLP model")
-        #     self.model = Sequential([
-        #         Dense(30, input_shape=(ns,), activation='relu'),
-        #         Dense(30, input_shape=(30,), activation='relu'),
-        #         Dense(30, input_shape=(30,), activation='relu'),
-        #         Dense(30, input_shape=(30,), activation='relu'),
-        #         Dense(na, input_shape=(30,))
-        #     ])
-        #     self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
-        #
+        # MLP
+        if model_name == "MLP":
+            print("Using MLP model")
+            self.model = Sequential([
+                Dense(30, input_shape=(ns + na,), activation='relu'),
+                Dense(30, input_shape=(30,), activation='relu'),
+                Dense(30, input_shape=(30,), activation='relu'),
+                Dense(30, input_shape=(30,), activation='relu'),
+                Dense(1, input_shape=(30,))
+            ])
+            self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
+
         # # Duel DQN
         # if model_name == "Duel DQN":
         #     print("Using dual DQN model")
-        #     input = Input(shape=(ns,))
+        #     input = Input(shape=(ns + na,))
         #     x = Dense(30, activation='relu')(input)
         #     x = Dense(30, activation='relu')(x)
         #     val_fc = Dense(30)(x)
@@ -79,7 +71,7 @@ class Memory:
         self.burn_in = burn_in
         self.full = False
         # burn in
-        simu = Simulator()
+        simu = Simulator(verbose=False)
         for i in range(8):
             simu.create_unit(i, int(i / 4))
 
@@ -117,7 +109,7 @@ class Memory:
 class DQN_Agent:
 
     def __init__(self, identifier, model_name, learning_rate, use_replay_memory, memory_size, burn_in):
-        self.simu = Simulator()
+        self.simu = Simulator(verbose=False)
         for i in range(8):
             self.simu.create_unit(i, int(i / 4))
 
@@ -137,6 +129,7 @@ class DQN_Agent:
             return actions[np.argmax(q_values)]
 
     def train(self, max_iteration, eps, eps_decay, eps_min, interval_iteration, gamma, test_size):
+        self.test(0, test_size=test_size)
         iteration = 0
         performance = []
         while iteration <= max_iteration:
@@ -168,7 +161,7 @@ class DQN_Agent:
                             if done1 is True:
                                 target = r1
                             else:
-                                target = r1 + gamma * np.max([self.net.qvalue(sa_pair_) for sa_pair_ in next_sa_pairs1])
+                                target = r1 + gamma * np.max([self.net.qvalue(sa_pair_.reshape(1, -1))[0][0] for sa_pair_ in next_sa_pairs1])
                             x_train[i1] = sa_pair1
                             y_train[i1] = target
                         self.net.train(x_train, y_train, len(mini_batch))
@@ -227,18 +220,21 @@ class DQN_Agent:
 
     def test(self, iteration, test_size):
         rewards = 0
+        count = 0
         for _ in range(test_size):
             s2, _, _ = self.simu.reset()
             while True:
                 actions = self.simu.get_action_space()
-                q_values = [self.net.qvalue(np.concatenate((s2.flatten(), action))) for action in actions]
+                q_values = [self.net.qvalue(np.concatenate((s2.flatten(), action.get_values())).reshape(1, -1))[0][0] for action in actions]
                 a = self.epsilon_greedy_policy(q_values, 0, actions)
                 s2, r2, done2 = self.simu.step(a)
                 rewards += r2
+                count += 1
                 if done2:
                     break
         print("The average reward of {} iteration is {}".format(iteration, rewards / test_size))
-        return rewards / test_size
+        print("The average iterations taken per episode is {}".format(count / test_size))
+        return rewards / test_size, count / test_size
 
 
 def main(identifier, model_name, max_iteration, epsilon, epsilon_decay, epsilon_min, interval_iteration, gamma,
