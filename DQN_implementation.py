@@ -26,11 +26,11 @@ class QNetwork:
         if model_name == "MLP":
             print("Using MLP model")
             self.model = Sequential([
-                Dense(30, input_shape=(ns + na,), activation='relu'),
-                Dense(30, input_shape=(30,), activation='relu'),
-                Dense(30, input_shape=(30,), activation='relu'),
-                Dense(30, input_shape=(30,), activation='relu'),
-                Dense(1, input_shape=(30,))
+                Dense(50, input_shape=(ns + na,), activation='relu'),
+                Dense(50, input_shape=(50,), activation='relu'),
+                Dense(50, input_shape=(50,), activation='relu'),
+                Dense(50, input_shape=(50,), activation='relu'),
+                Dense(1, input_shape=(50,))
             ])
             self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
 
@@ -199,6 +199,7 @@ class DQN_Agent:
                     # save model
                     if iteration % int(max_iteration / 3) == 0:
                         self.net.save_model(self.identifier, iteration)
+                        dump(performance, open('./model/{}{}.p'.format(iteration, self.identifier), 'wb'))
                         break
                     if done:
                         # print("hold for {} sec".format(i - start))

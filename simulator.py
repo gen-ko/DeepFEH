@@ -100,7 +100,7 @@ class Simulator:
         """
         # opponent moves randomly
         grid = []
-        reward = -1
+        reward = 0
         done = False
         for i, val in enumerate(self.enemy_round):
             a = self.map.get_action_space(val)
