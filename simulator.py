@@ -11,7 +11,7 @@ Simple assumption:
     Enemy will act from first role to last role in sequence
 """
 class Simulator:
-    def __init__(self, nrows=8, ncols=6):
+    def __init__(self, nrows=8, ncols=6, difficulty = 0.5):
         self.nrows = nrows
         self.ncols = ncols
         self.units = []
@@ -19,6 +19,7 @@ class Simulator:
         self.map = self.map = Map(self.nrows, self.ncols, self.units)
         self.friendly_round = []
         self.enemy_round = []
+        self.difficulty = difficulty
 
     def create_unit(self, id, team):
         """
@@ -85,7 +86,7 @@ class Simulator:
             space.extend(tmp_space)
         return space
 
-    def _opponent_move(self):
+    def _opponent_move(self, difficulty):
         """
         stupid opponent moves
         """
@@ -96,17 +97,15 @@ class Simulator:
         for i, val in enumerate(self.enemy_round):
             action = self.map.get_action_space(val)
             a = None
-            for a_ in action:
-                if a_.des_unit is not None:
-                    a = a_
-                    break
+            delta = random.random()
+            if delta < difficulty:
+                for a_ in action:
+                    if a_.des_unit is not None:
+                        a = a_
+                        break
             if a is None:
                 a = random.choice(action)
             grid, done, dead = self.map.action(a)
-            print(a)
-            if a.des_unit is not None:
-                print(a.des_unit.cur_hp)
-                print(a.src_unit.cur_hp)
             if done:
                 print("last dead unit is {} ".format(dead.index))
                 if dead.team == 0:
