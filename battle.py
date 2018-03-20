@@ -5,9 +5,12 @@ import skill
 def attack(a: Unit, b: Unit):
 
     dmg = compute_damage(a, b)
+    b.cur_hp -= dmg
+    
     if b.cur_hp <= 0:
         b.cur_hp = 0
         b.is_dead = 1
+        return
 
     # counter-attack
     if b.damage_type == 0:

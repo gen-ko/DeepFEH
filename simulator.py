@@ -103,9 +103,19 @@ class Simulator:
         reward = -1
         done = False
         for i, val in enumerate(self.enemy_round):
-            a = self.map.get_action_space(val)
-            a = random.choice(a)
+            action = self.map.get_action_space(val)
+            a = None
+            for a_ in action:
+                if a_.des_unit is not None:
+                    a = a_
+                    break
+            if a is None:
+                a = random.choice(action)
             grid, done, dead = self.map.action(a)
+            print(a)
+            if a.des_unit is not None:
+                print(a.des_unit.cur_hp)
+                print(a.src_unit.cur_hp)
             if done:
                 if self.verbose:
                     print("last dead unit is {} ".format(dead.index))
