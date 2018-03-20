@@ -3,6 +3,11 @@ import sys
 
 from map import Map
 from unit import Unit
+<<<<<<< HEAD
+
+import sys
+import random
+import copy
 
 """
 Simple assumption:
@@ -29,7 +34,7 @@ class Simulator:
         """
         unit = Unit(id, team)
         self.units.append(unit)
-        self.units_backup = self.units
+        self.units_backup.append(copy.deepcopy(unit))
         if team == 0:
             self.friendly_round.append(unit)
         if team == 1:
@@ -39,7 +44,7 @@ class Simulator:
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
-        self.units = self.units_backup
+        self.units = copy.deepcopy(self.units_backup)
         self.map = Map(self.nrows, self.ncols, self.units)
         loc = self.map.get_locations()
 
@@ -71,11 +76,11 @@ class Simulator:
                 reward = 100
                 print("You win, you rock")
             return loc, reward, done
-        self.update_list(dead)
+        self._update_list(dead)
 
         # if friendly units finish moveing, let enemy move
         if len(self.friendly_round) == 0:
-            loc, reward, done = self.opponent_move()
+            loc, reward, done = self._opponent_move()
         return loc, reward, done
 
     def get_action_space(self):
@@ -97,9 +102,19 @@ class Simulator:
         reward = 0
         done = False
         for i, val in enumerate(self.enemy_round):
-            a = self.map.get_action_space(val)
-            a = random.choice(a)
+            action = self.map.get_action_space(val)
+            a = None
+            for a_ in action:
+                if a_.des_unit is not None:
+                    a = a_
+                    break
+            if a is None:
+                a = random.choice(action)
             grid, done, dead = self.map.action(a)
+            print(a)
+            if a.des_unit is not None:
+                print(a.des_unit.cur_hp)
+                print(a.src_unit.cur_hp)
             if done:
                 print("last dead unit is {} ".format(dead.index))
                 if dead.team == 0:
@@ -109,7 +124,7 @@ class Simulator:
                     reward = 100
                     print("You win, you rock")
                 return grid, reward, done
-            self.update_list(dead)
+            self._update_list(dead)
 
         # refill the friendly round list
         for i, val in enumerate(self.units):
@@ -138,11 +153,22 @@ def main(argv):
         simu.create_unit(i, int(i / 4))
     s, r, done = simu.reset()
     print_info(s, r, done)
+
+
     while not done:
         a = simu.get_action_space()
         a = random.choice(a)
         s, r, done = simu.step(a)
-        print_info(s, r, done)
+        # print_info(s, r, done)
+    print_info(s, r, done)
+    s, r, done = simu.reset()
+
+    while not done:
+        a = simu.get_action_space()
+        a = random.choice(a)
+        s, r, done = simu.step(a)
+        # print_info(s, r, done)
+    print_info(s, r, done)
 
 
 def print_info(s, r, done):
