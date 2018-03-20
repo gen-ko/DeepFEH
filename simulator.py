@@ -26,11 +26,11 @@ class Simulator:
         self.friendly_round = []
         self.enemy_round = []
 
-    def create_unit(self, id, team):
+    def create_unit(self, id, team, max_hp):
         """
         customize unit that you want
         """
-        unit = Unit(id, team)
+        unit = Unit(id, team, max_hp=max_hp)
         self.units.append(unit)
         self.units_backup.append(copy.deepcopy(unit))
         if team == 0:
@@ -61,7 +61,7 @@ class Simulator:
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
-        reward = -1
+        reward = 0
         unit = a.src_unit
         self.friendly_round.remove(unit)
         loc, done, dead = self.map.action(a)

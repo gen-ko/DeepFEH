@@ -5,7 +5,6 @@ class Unit(object):
     cnt = 0
 
     def __init__(self, index=0, team=0,
-
                  max_hp: int = 40,
                  atk: int = 30,
                  spd: int = 36,
