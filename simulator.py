@@ -1,11 +1,10 @@
+import copy
 import random
 import sys
 
 from map import Map
 from unit import Unit
-import sys
-import random
-import copy
+
 """
 Simple assumption:
     Team0 is always friendly and Team1 is enemy.
@@ -16,7 +15,7 @@ Simple assumption:
 
 
 class Simulator:
-    def __init__(self, nrows=8, ncols=6, verbose=True, aggressive_agent=False):
+    def __init__(self, nrows=8, ncols=6, verbose=True, difficulty=0.0):
         self.verbose = verbose
         self.nrows = nrows
         self.ncols = ncols
@@ -25,7 +24,7 @@ class Simulator:
         self.map = Map(self.nrows, self.ncols, self.units, self.verbose)
         self.friendly_round = []
         self.enemy_round = []
-        self.aggressive = aggressive_agent
+        self.difficulty = difficulty
 
     def create_unit(self, id, team, max_hp=40):
         """
@@ -106,7 +105,7 @@ class Simulator:
         for i, val in enumerate(self.enemy_round):
             action = self.map.get_action_space(val)
             a = None
-            if self.aggressive:
+            if random.random() <= self.difficulty:
                 for a_ in action:
                     if a_.des_unit is not None:
                         a = a_
@@ -155,16 +154,27 @@ def main(argv):
         simu.create_unit(i, int(i / 4))
     s, r, done = simu.reset()
     while not done:
-        a = simu.get_action_space()
-        a = random.choice(a)
+        action = simu.get_action_space()
+        a = None
+        for a_ in action:
+            if a_.des_unit is not None:
+                a = a_
+                break
+        if a is None:
+            a = random.choice(action)
         s, r, done = simu.step(a)
         # print_info(s, r, done)
     print_info(s, r, done)
     s, r, done = simu.reset()
-
     while not done:
-        a = simu.get_action_space()
-        a = random.choice(a)
+        action = simu.get_action_space()
+        a = None
+        for a_ in action:
+            if a_.des_unit is not None:
+                a = a_
+                break
+        if a is None:
+            a = random.choice(action)
         s, r, done = simu.step(a)
         # print_info(s, r, done)
     print_info(s, r, done)
