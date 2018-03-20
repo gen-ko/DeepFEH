@@ -27,11 +27,10 @@ class QNetwork:
         if model_name == "MLP":
             print("Using MLP model")
             self.model = Sequential([
-                Dense(50, input_shape=(ns + na,), activation='relu'),
-                Dense(50, input_shape=(50,), activation='relu'),
-                Dense(50, input_shape=(50,), activation='relu'),
-                Dense(50, input_shape=(50,), activation='relu'),
-                Dense(1, input_shape=(50,))
+                Dense(30, input_shape=(ns + na,), activation='relu'),
+                Dense(20, input_shape=(30,), activation='relu'),
+                Dense(10, input_shape=(20,), activation='relu'),
+                Dense(1, input_shape=(10,))
             ])
             self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
 

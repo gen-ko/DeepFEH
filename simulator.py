@@ -16,7 +16,7 @@ Simple assumption:
 
 
 class Simulator:
-    def __init__(self, nrows=8, ncols=6, verbose=True):
+    def __init__(self, nrows=8, ncols=6, verbose=True, aggressive_agent=False):
         self.verbose = verbose
         self.nrows = nrows
         self.ncols = ncols
@@ -25,8 +25,9 @@ class Simulator:
         self.map = Map(self.nrows, self.ncols, self.units, self.verbose)
         self.friendly_round = []
         self.enemy_round = []
+        self.aggressive = aggressive_agent
 
-    def create_unit(self, id, team, max_hp):
+    def create_unit(self, id, team, max_hp=40):
         """
         customize unit that you want
         """
@@ -105,17 +106,14 @@ class Simulator:
         for i, val in enumerate(self.enemy_round):
             action = self.map.get_action_space(val)
             a = None
-            for a_ in action:
-                if a_.des_unit is not None:
-                    a = a_
-                    break
+            if self.aggressive:
+                for a_ in action:
+                    if a_.des_unit is not None:
+                        a = a_
+                        break
             if a is None:
                 a = random.choice(action)
             grid, done, dead = self.map.action(a)
-            print(a)
-            if a.des_unit is not None:
-                print(a.des_unit.cur_hp)
-                print(a.src_unit.cur_hp)
             if done:
                 if self.verbose:
                     print("last dead unit is {} ".format(dead.index))
