@@ -11,7 +11,7 @@ Simple assumption:
     Enemy will act from first role to last role in sequence
 """
 class Simulator:
-    def __init__(self, nrows=8, ncols=6, difficulty = 0.5):
+    def __init__(self, nrows=8, ncols=6, difficulty = 0.8):
         self.nrows = nrows
         self.ncols = ncols
         self.units = []
@@ -86,7 +86,7 @@ class Simulator:
             space.extend(tmp_space)
         return space
 
-    def _opponent_move(self, difficulty):
+    def _opponent_move(self):
         """
         stupid opponent moves
         """
@@ -98,7 +98,7 @@ class Simulator:
             action = self.map.get_action_space(val)
             a = None
             delta = random.random()
-            if delta < difficulty:
+            if delta < self.difficulty:
                 for a_ in action:
                     if a_.des_unit is not None:
                         a = a_
@@ -144,16 +144,27 @@ def main(argv):
         simu.create_unit(i, int(i/4))
     s, r, done = simu.reset()
     while not done:
-        a = simu.get_action_space()
-        a = random.choice(a)
+        action = simu.get_action_space()
+        a = None
+        for a_ in action:
+            if a_.des_unit is not None:
+                a = a_
+                break
+        if a is None:
+            a = random.choice(action)
         s, r, done = simu.step(a)
         # print_info(s, r, done)
     print_info(s, r, done)
     s, r, done = simu.reset()
-
     while not done:
-        a = simu.get_action_space()
-        a = random.choice(a)
+        action = simu.get_action_space()
+        a = None
+        for a_ in action:
+            if a_.des_unit is not None:
+                a = a_
+                break
+        if a is None:
+            a = random.choice(action)
         s, r, done = simu.step(a)
         # print_info(s, r, done)
     print_info(s, r, done)
