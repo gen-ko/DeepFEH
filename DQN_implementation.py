@@ -38,21 +38,21 @@ class QNetwork:
         # Duel DQN
         if model_name == "Duel DQN":
             print("Using duel DQN model")
-
             input = Input(shape=(ns + na,))
             states = Lambda(lambda x: x[:, :ns], output_shape=(ns,))(input)
-            # state value
+            # state value V(s)
             x = Dense(30)(states)
             x = Dense(30)(x)
             x = Dense(30)(x)
             x = Dense(30)(x)
             value = Dense(1)(x)
-            # action advantage
+            # action advantage A(s, a)
             y = Dense(30)(input)
             y = Dense(30)(y)
             y = Dense(30)(y)
             y = Dense(30)(y)
             advantage = Dense(1)(y)
+            # Q(s, a) = V(s) + A(s, a)
             output = add([value, advantage])
             self.model = Model(input, output)
             self.model.compile(loss='mean_squared_error', optimizer=Adam(lr=learning_rate))
