@@ -119,9 +119,7 @@ class Memory:
 class DQN_Agent:
 
     def __init__(self, identifier, model_name, learning_rate, use_replay_memory, memory_size, burn_in):
-        self.simu = Simulator()
-        for i in range(8):
-            self.simu.create_unit(i, int(i / 4))
+
 
         self.identifier = identifier
         self.ns = 48
