@@ -2,121 +2,101 @@
 
 
 from collections import deque
-
 import numpy as np
 
-from feh_simulator.action import Action
-from feh_simulator.battle import attack
+from feh_simulator.unit import Unit
+from feh_simulator.skill import MovementType
 
 
-class Map:
-    def __init__(self, nrows=8, ncols=6, units=None, verbose=True):
+class Map(object):
+    def __init__(self, map_file='./map_data/map_default.txt', verbose=False):
+        with open(map_file) as f:
+            content = f.readlines()
+
         self.verbose = verbose
-        self.nrows = nrows
-        self.ncols = ncols
-        self.units = units
-        self.done = False
-        self.grid = np.array([[0 for _ in range(ncols)] for _ in range(nrows)])
-        self.locations = {
-            unit: [i % 2 if i < 4 else nrows - 1 - (i - 4) % 2, int(i / 2) if i < 4 else ncols - 1 - int((i - 4) / 2)]
-            for i, unit in enumerate(units, 0)}
-        for x, y in self.locations.values():
-            self.grid[x][y] = 1
+        self.nrows = int(content[0])
+        self.ncols = int(content[1])
 
-    def get_action_space(self, unit):
-        loc = self.locations[unit]
+        self.terrain_grid = np.zeros(shape=(self.nrows, self.ncols), dtype=int)
+        self.unit_grid = np.zeros(shape=(self.nrows, self.ncols), dtype=int)
 
-        # get all move destinations
-        move_destinations = set([])
-        queue = deque(maxlen=self.nrows * self.ncols)
-        queue.append((loc, 0))
-        move_destinations.add(tuple(loc))
-        dx = [0, 0, 1, -1]
-        dy = [1, -1, 0, 0]
-        while queue:
-            (x, y), distance = queue.popleft()
-            move_destinations.add((x, y))
-            for k in range(4):
-                x_, y_ = x + dx[k], y + dy[k]
-                if (x_,
-                    y_) not in move_destinations and 0 <= x_ <= self.nrows - 1 and 0 <= y_ <= self.ncols - 1 and distance + 1 <= unit.movement_range and \
-                        self.grid[x_][y_] != 1:
-                    queue.append(([x_, y_], distance + 1))
+        for r in range(self.nrows):
+            tmp = content[r + 2].split(' ')
+            # check tmp length
+            if len(tmp) != self.ncols:
+                raise ValueError('Map data invalid.')
+            self.terrain_grid[r] = tmp
 
-        # get all attack enemies and construct possible actions
-        res = []
-        for move_dest in move_destinations:
-            # don't attack -> des_unit is None
-            res.append(Action(unit, move_dest, None))
-            for enemy in self._get_enemies(unit):
-                if self._get_distance(move_dest, self.locations[enemy]) <= unit.attack_range:
-                    # attack -> des_uniut is enemy
-                    res.append(Action(unit, move_dest, enemy))
-        return res
+    def register_unit(self, unit: Unit, x: int, y: int):
+        self.unit_grid[y, x] = unit.id
+        unit.x = x
+        unit.y = y
 
-    # modified unit to location because if return element in unit, the for loop just above will have error
-    def _get_enemies(self, unit):
-        return [candidate for candidate in self.locations if candidate.team != unit.team]
+    def move_unit(self, unit: Unit, x: int, y: int):
+        self.unit_grid[unit.y, unit.x] = 0
+        self.unit_grid[y, x] = unit.id
 
-    def _get_friendly(self, unit):
-        return [candidate for candidate in self.locations if candidate.team == unit.team]
+    def is_location_standable(self, unit: Unit, x: int, y: int) -> bool:
+        if self.terrain_grid[y, x] == 3:
+            return False
+        if self.terrain_grid[y, x] == 4:
+            return False
+        if self.terrain_grid[y, x] == 5:
+            return False
+        if self.terrain_grid[y, x] == 2 and unit.movement_type != MovementType.FLYING:
+            return False
+        if self.terrain_grid[y, x] == 1 and unit.movement_type == MovementType.CAVALRY:
+            return False
+        if self.unit_grid[y, x] != 0:  # if location is occupied (!= 0), then
+            return False
+        return True
 
-    def get_locations(self):
-        loc = np.array([[0 for _ in range(self.ncols)] for _ in range(self.nrows)])
-        friends = [position for unit, position in self.locations.items() if unit.team == 0]
-        enemies = [position for unit, position in self.locations.items() if unit.team == 1]
-        for x, y in friends:
-            loc[x][y] = 1
-        for x, y in enemies:
-            loc[x][y] = 1
-        return loc
+    def get_reachable_locations(self, unit: Unit) -> {(int, int)}:
+        """
+        get all available movement target coordinates (before action on other units)
+        :param unit:
+        :return:
+        """
+        move_range = unit.get_movement_range(surrounding_units=set())
+        reachable_coordinates: set = {(unit.x, unit.y)}
+        visited_coordinates: set = {}
+        pending_coordinates = deque([(unit.x, unit.y, move_range)], maxlen=self.ncols * self.nrows)
+        while pending_coordinates:   # if it is not empty
+            x, y, available_step = pending_coordinates.pop()
+            visited_coordinates.add((x, y))
+            if available_step == 0:
+                continue
+            if self.is_location_standable(unit=unit, x=x, y=y-1):
+                reachable_coordinates.add((x, y-1))
+                if (x, y - 1) not in visited_coordinates:
+                    pending_coordinates.append((x, y-1, available_step - 1))
+            if self.is_location_standable(unit=unit, x=x-1, y=y):
+                reachable_coordinates.add((x-1, y))
+                if (x-1, y) not in visited_coordinates:
+                    pending_coordinates.append((x-1, y, available_step - 1))
+            if self.is_location_standable(unit=unit, x=x, y=y+1):
+                reachable_coordinates.add((x, y+1))
+                if (x, y + 1) not in visited_coordinates:
+                    pending_coordinates.append((x, y+1, available_step - 1))
+            if self.is_location_standable(unit=unit, x=x+1, y=y):
+                reachable_coordinates.add((x+1, y))
+                if (x+1, y) not in visited_coordinates:
+                    pending_coordinates.append((x+1, y, available_step - 1))
+        return reachable_coordinates
 
     @staticmethod
-    def _get_distance(pos_a, pos_b):
-        return abs(pos_a[0] - pos_b[0]) + abs(pos_a[1] - pos_b[1])
-
-    def action(self, action):
-        # move source unit
-        if action.src_unit in self.locations:
-            x_, y_ = action.destination
-            x, y = self.locations[action.src_unit]
-            self.locations[action.src_unit] = x_, y_
-            self.grid[x][y] = 0
-            self.grid[x_][y_] = 1
-            if self.verbose:
-                print("unit " + str(action.src_unit.index) + " move to " + str(x_) + "," + str(y_))
-
-        dead = None
-        # attack enemy
-        if action.des_unit is not None:
-            attack(action.src_unit, action.des_unit)
-            if self.verbose:
-                print("unit " + str(action.src_unit.index) + " attack " + str(action.des_unit.index))
-
-            # delete from locations
-            if action.src_unit.is_dead:
-                x, y = self.locations[action.src_unit]
-                del self.locations[action.src_unit]
-                self.grid[x][y] = 0
-                dead = action.src_unit
-
-            if action.des_unit.is_dead:
-                x, y = self.locations[action.des_unit]
-                del self.locations[action.des_unit]
-                self.grid[x][y] = 0
-                dead = action.des_unit
-
-        done = False
-        if len(self._get_friendly(action.src_unit)) == 0 or len(self._get_enemies(action.src_unit)) == 0:
-            done = True
-        return self.grid, done, dead
-
-    def set_verbose(self, v):
-        self.verbose = v
+    def get_distance(unit_a: Unit, unit_b: Unit):
+        return abs(unit_a.x - unit_b.x) + abs(unit_a.y - unit_b.y)
 
     def __str__(self):
-        return str(self.grid)
+        return str(self.terrain_grid)
 
     def render(self):
-        print("Vacancy grid is ")
-        print(self.grid)
+        for r in range(self.nrows):
+            for c in range(self.ncols):
+                if self.unit_grid[r, c] != 0:  # if the location is occupied by an unit, print the unit's id
+                    print('U', self.unit_grid[r, c], sep='', end='  ')
+                else:
+                    print('T', self.terrain_grid[r, c], sep='', end='  ')
+            print('')
+        return

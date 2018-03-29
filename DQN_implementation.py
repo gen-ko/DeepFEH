@@ -3,10 +3,6 @@ from pickle import dump
 from random import random, sample, choice
 from deepqn import model
 import numpy as np
-from keras import Sequential, Model
-from keras.layers import Dense, Input, Lambda, add, concatenate
-from keras.optimizers import Adam
-from keras import backend as K
 
 from feh_simulator.simulator import Simulator
 
@@ -174,4 +170,3 @@ def main(identifier, model_name, max_iteration, epsilon, epsilon_decay, epsilon_
                       difficulty=difficulty)
     agent.train(max_iteration=max_iteration, eps=epsilon, eps_decay=epsilon_decay,
         eps_min=epsilon_min, interval_iteration=interval_iteration, gamma=gamma, test_size=test_size)
-    
