@@ -101,3 +101,5 @@ ENV/
 # pycharm
 .idea/
 
+feh_simulator/.DS_Store
+.DS_Store

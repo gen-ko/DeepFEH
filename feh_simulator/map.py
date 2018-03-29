@@ -10,7 +10,7 @@ from feh_simulator.battle import attack
 from feh_simulator.unit import Unit
 from feh_simulator.skill import MovementType
 
-
+# TODO: implement allies pass and enemy block in the reachable locations
 class Map(object):
     def __init__(self, map_file='./map_data/map_default.txt'):
         with open(map_file) as f:
@@ -28,18 +28,31 @@ class Map(object):
                 raise ValueError('Map data invalid.')
             self.terrain_grid[r] = tmp
 
+        self.team_1_start_location = []
+        self.team_2_start_location = []
+        for r in range(self.nrows):
+            tmp = content[r + 11].split(' ')
+            for c in range(self.ncols):
+                if int(tmp[c]) == 1:
+                    self.team_1_start_location.append((c, r))
+                elif int(tmp[c]) == 2:
+                    self.team_2_start_location.append((c, r))
+        return
+
     def register_unit(self, unit: Unit, x: int, y: int):
+        if not self.is_location_standable(unit=unit, x=x, y=y):
+            raise ValueError('Illegal initial location of unit:', unit.id)
         self.unit_grid[y, x] = unit.id
         unit.x = x
         unit.y = y
-
 
     def move_unit(self, unit: Unit, x: int, y: int):
         self.unit_grid[unit.y, unit.x] = 0
         self.unit_grid[y, x] = unit.id
 
-
     def is_location_standable(self, unit: Unit, x: int, y: int) -> bool:
+        if x >= self.ncols or x < 0 or y >= self.nrows or y < 0:
+            return False
         if self.terrain_grid[y, x] == 3:
             return False
         if self.terrain_grid[y, x] == 4:
@@ -54,7 +67,6 @@ class Map(object):
             return False
         return True
 
-
     def get_reachable_locations(self, unit: Unit) -> {(int, int)}:
         """
         get all available movement target coordinates (before action on other units)
@@ -63,7 +75,7 @@ class Map(object):
         """
         move_range = unit.get_movement_range(surrounding_units=set())
         reachable_coordinates: set = {(unit.x, unit.y)}
-        visited_coordinates: set = {}
+        visited_coordinates: set = set()
         pending_coordinates = deque([(unit.x, unit.y, move_range)], maxlen=self.ncols * self.nrows)
         while pending_coordinates:  # if it is not empty
             x, y, available_step = pending_coordinates.pop()
@@ -94,9 +106,10 @@ class Map(object):
     def render(self):
         for r in range(self.nrows):
             for c in range(self.ncols):
+                print(self.terrain_grid[r, c], sep='', end=':')
                 if self.unit_grid[r, c] != 0:  # if the location is occupied by an unit, print the unit's id
-                    print('U', self.unit_grid[r, c], sep='', end='  ')
+                    print(self.unit_grid[r, c], sep='', end='  ')
                 else:
-                    print('T', self.terrain_grid[r, c], sep='', end='  ')
+                    print('_', sep='', end='  ')
             print('')
         return

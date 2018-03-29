@@ -3,18 +3,14 @@ from feh_simulator import skill
 
 class Unit(object):
     cnt = 1
-    def __init__(self,
-                 index=0,
-                 team=0,
-                 x: int = 0,
-                 y: int = 0,
-                 unit_file: str = './unit_data/unit_default.txt'):
+
+    def __init__(self, team: int = 0, unit_file: str = './unit_data/unit_default.txt'):
 
         self.id = Unit.cnt
         Unit.cnt += 1
 
-        self.x = x
-        self.y = y
+        self.x = -1
+        self.y = -1
 
         with open(unit_file) as f:
             content = f.readlines()

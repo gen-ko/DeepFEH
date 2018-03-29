@@ -1,0 +1,13 @@
+max_hp = 42
+atk = 38
+spd = 35
+def = 28
+res = 27
+movement_type = INFANTRY
+weapon = SILVER_DAGGER_PLUS
+support = RALLY_RESISTANCE
+special = MIRACLE
+passive_a = DEFENSE_PLUS_3
+passive_b = RENEWAL_3
+passive_c = DRIVE_RES_2
+passive_s = EMPTY

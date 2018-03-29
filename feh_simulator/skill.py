@@ -116,12 +116,18 @@ class Weapon(Enum):
     BLARRAVEN_PLUS = auto()
 
     BRAVE_LANCE_PLUS = auto()
+
+    SILVER_DAGGER_PLUS = auto()
     @staticmethod
     def str2enum(s: str):
         for i in Weapon:
             if i.__dict__['_name_'] == s:
                 return i
         raise ValueError('Invalid weapon name')
+    @staticmethod
+    def get_atk(weapon):
+        if weapon == Weapon.SILVER_DAGGER_PLUS:
+            return 10
 
 
 WEAPON_TO_WEAPON_TYPE = {
