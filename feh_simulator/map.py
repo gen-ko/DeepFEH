@@ -5,13 +5,13 @@ from collections import deque
 
 import numpy as np
 
-from action import Action
-from battle import attack
+from feh_simulator.action import Action
+from feh_simulator.battle import attack
 
 
 class Map:
-    def __init__(self, nrows=8, ncols=6, units=None):
-        self.verbose = True
+    def __init__(self, nrows=8, ncols=6, units=None, verbose=True):
+        self.verbose = verbose
         self.nrows = nrows
         self.ncols = ncols
         self.units = units

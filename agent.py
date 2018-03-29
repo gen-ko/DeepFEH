@@ -1,11 +1,12 @@
 
-from deepqn import model
-from deepqn import memory_replay
-from simulator import Simulator
-
-import tensorflow as tf
 from collections import deque
+
 import numpy as np
+import tensorflow as tf
+from deepqn import memory_replay
+from deepqn import model
+
+from feh_simulator.simulator import Simulator
 
 identifier = "FEH MLP agent"
 

@@ -1,4 +1,4 @@
-import skill
+from feh_simulator import skill
 
 
 class Unit(object):

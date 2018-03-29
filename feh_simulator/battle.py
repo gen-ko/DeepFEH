@@ -1,6 +1,8 @@
 
-from unit import Unit
-import skill
+from feh_simulator.unit import Unit
+
+from feh_simulator import skill
+
 
 def attack(a: Unit, b: Unit):
 

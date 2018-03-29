@@ -1,4 +1,4 @@
-from simulator import Simulator
+from feh_simulator.simulator import Simulator
 s = Simulator()
 ass = s.reset()
 s.map.render()
