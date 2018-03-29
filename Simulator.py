@@ -3,7 +3,6 @@ import sys
 
 from map import Map
 from unit import Unit
-<<<<<<< HEAD
 
 import sys
 import random

@@ -10,6 +10,8 @@ from pickle import dump
 from keras import backend as K
 from simulator import Simulator
 
+import deepqn
+
 
 class QNetwork:
 
