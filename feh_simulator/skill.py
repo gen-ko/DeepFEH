@@ -12,6 +12,13 @@ class MovementType(Enum):
     CAVALRY = auto()
     FLYING = auto()
 
+    @staticmethod
+    def str2enum(s: str):
+        for i in MovementType:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid movement_type name: ', s)
+
 class DamageType(Enum):
     PHYSICAL = auto()
     MAGICAL = auto()
@@ -37,6 +44,12 @@ class PassiveA(Enum):
     TRIANGLE_ADEPT_2 = auto()
     TRIANGLE_ADEPT_3 = auto()
     DISTANT_COUNTER = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in PassiveA:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid passive_c name:', s)
 
 
 class PassiveB(Enum):
@@ -44,22 +57,52 @@ class PassiveB(Enum):
     CANCEL_AFFINITY_1 = auto()
     CANCEL_AFFINITY_2 = auto()
     CANCEL_AFFINITY_3 = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in PassiveB:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid passive_b name:', s)
 
 
 class PassiveC(Enum):
     EMPTY = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in PassiveC:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid passive_c name:', s)
 
 
 class PassiveS(Enum):
     EMPTY = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in PassiveS:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid passive_s name')
 
 
 class Special(Enum):
     EMPTY = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in Special:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid special name')
 
 
 class Support(Enum):
     EMPTY = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in Support:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid support name')
 
 
 class Weapon(Enum):
@@ -73,8 +116,13 @@ class Weapon(Enum):
 
     SAPPHIRE_LANCE_PLUS = auto()
     BLARRAVEN_PLUS = auto()
-
     BRAVE_LANCE_PLUS = auto()
+    @staticmethod
+    def str2enum(s: str):
+        for i in Weapon:
+            if i.__dict__['_name_'] == s:
+                return i
+        raise ValueError('Invalid weapon name')
 
 
 WEAPON_TO_WEAPON_TYPE = {
