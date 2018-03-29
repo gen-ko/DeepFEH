@@ -74,6 +74,8 @@ class Weapon(Enum):
     SAPPHIRE_LANCE_PLUS = auto()
     BLARRAVEN_PLUS = auto()
 
+    BRAVE_LANCE_PLUS = auto()
+
 
 WEAPON_TO_WEAPON_TYPE = {
     Weapon.EMPTY: WeaponType.COLORLESS_STAFF,

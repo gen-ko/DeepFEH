@@ -1,5 +1,6 @@
-from map import Map, Action
 from unit import Unit
+
+from feh_simulator.map import Map
 
 units = [Unit(i, int(i / 4)) for i in range(8)]
 m = Map(8, 6, units)

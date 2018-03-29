@@ -1,6 +1,4 @@
-from enum import Enum
-
-import skill
+from feh_simulator import skill
 
 
 class Unit(object):
@@ -13,7 +11,7 @@ class Unit(object):
                  spd: int = 36,
                  defence: int = 25,
                  res: int = 26,
-                 movement_type = skill.MovementType.INFANTRY,
+                 movement_type=skill.MovementType.INFANTRY,
                  passive_a=skill.PassiveA.EMPTY,
                  passive_b=skill.PassiveB.EMPTY,
                  passive_c=skill.PassiveC.EMPTY,
@@ -47,9 +45,6 @@ class Unit(object):
         self.attack_range = skill.WEAPON_TYPE_TO_ATTACK_RANGE[self.weapon_type]
         self.damage_type = skill.WEAPON_TYPE_TO_DAMAGE_TYPE[self.weapon_type]
         self.movement_range = skill.MOVEMENT_TYPE_TO_MOVEMENT_RANGE[self.movement_type]
-
-
-
 
         self.is_dead: bool = 0
         self.team: int = team
