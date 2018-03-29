@@ -106,7 +106,8 @@ class Unit(object):
         self.attack_range = skill.WEAPON_TYPE_TO_ATTACK_RANGE[self.weapon_type]
         self.damage_type = skill.WEAPON_TYPE_TO_DAMAGE_TYPE[self.weapon_type]
         self.movement_range = skill.MOVEMENT_TYPE_TO_MOVEMENT_RANGE[self.movement_type]
-
+        self.attack_range = skill.WEAPON_TYPE_TO_ATTACK_RANGE[self.weapon_type]
+        self.support_range = 1  # TODO
         self.is_dead: bool = False
         self.team: int = team
         return

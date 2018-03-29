@@ -53,7 +53,6 @@ class Map(object):
     def remove_unit(self, x: int, y: int):
         self.unit_grid[y, x] = 0
 
-
     def is_location_standable(self, unit: Unit, x: int, y: int) -> bool:
         if x >= self.ncols or x < 0 or y >= self.nrows or y < 0:
             return False

@@ -78,5 +78,25 @@ class Session:
                 self.current_round += 1
         return
 
-    def get_available_action(self, ):
-        # TODO
+    def get_available_actions(self) -> [(int, int, int, int)]:
+        """
+
+        :return: [source_unit_id, dx, dy, target_unit_id]
+        """
+        action_list: [(int, int, int, int)] = []
+        for unit_id, unit in self.units.items():
+            reachable_locations = self.map.get_reachable_locations(unit)
+            for (x, y) in reachable_locations:
+                # attack
+                target_unit_ids = self.map.find_units_by_distance(x=x, y=y, distance=unit.attack_range)
+                for target_id in target_unit_ids:
+                    if self.units[target_id].team == unit.team:
+                        continue
+                    action_list.append((unit_id, x - unit.x, y - unit.y, target_id))
+                # support
+                target_unit_ids = self.map.find_units_by_distance(x=x, y=y, distance=unit.support_range)
+                for target_id in target_unit_ids:
+                    if self.units[target_id].team != unit.team:
+                        continue
+                    action_list.append((unit_id, x - unit.x, y - unit.y, target_id))
+        return action_list
