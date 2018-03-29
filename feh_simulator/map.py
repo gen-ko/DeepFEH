@@ -50,6 +50,10 @@ class Map(object):
         self.unit_grid[unit.y, unit.x] = 0
         self.unit_grid[y, x] = unit.id
 
+    def remove_unit(self, x: int, y: int):
+        self.unit_grid[y, x] = 0
+
+
     def is_location_standable(self, unit: Unit, x: int, y: int) -> bool:
         if x >= self.ncols or x < 0 or y >= self.nrows or y < 0:
             return False
@@ -100,8 +104,20 @@ class Map(object):
                     pending_coordinates.append((x + 1, y, available_step - 1))
         return reachable_coordinates
 
+    @staticmethod
     def get_distance(unit_a: Unit, unit_b: Unit):
         return abs(unit_a.x - unit_b.x) + abs(unit_a.y - unit_b.y)
+
+    def find_units_by_distance(self, x: int, y: int, distance: int) -> set:
+        found_unit_ids = set()
+        for x0 in range(x - distance, x + distance + 1):
+            for y0 in range(y - distance, y + distance + 1):
+                if abs(x0 - x) + abs(y0 - y) == distance:
+                    if self.unit_grid[y0, x0] != 0:
+                        found_unit_ids.add(self.unit_grid[y0, x0])
+                else:
+                    continue
+        return found_unit_ids
 
     def render(self):
         for r in range(self.nrows):

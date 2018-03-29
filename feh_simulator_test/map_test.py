@@ -24,3 +24,13 @@ r2 = m.get_reachable_locations(u2)
 print(r)
 print(r2)
 
+
+f1 = m.find_units_by_distance(u.x, u.y, distance=1)
+print(f1)
+target_location = list(r2)[1]
+m.move_unit(u2, target_location[0], target_location[1])
+
+m.render()
+
+f1 = m.find_units_by_distance(u.x, u.y, distance=1)
+print(f1)

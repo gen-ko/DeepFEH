@@ -4,7 +4,19 @@ from feh_simulator.unit import Unit
 from feh_simulator import skill
 
 
-def attack(a: Unit, b: Unit):
+def act(a: Unit, b: Unit) -> None:
+    if a.team == b.team:
+        support(a, b)
+    else:
+        attack(a, b)
+    return
+
+
+def support(a: Unit, b: Unit) -> None:
+    return
+
+
+def attack(a: Unit, b: Unit) -> None:
 
     dmg = compute_damage(a, b)
     b.cur_hp -= dmg
