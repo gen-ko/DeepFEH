@@ -5,14 +5,6 @@ import sys
 from feh_simulator.map import Map
 from feh_simulator.unit import Unit
 import feh_simulator.battle as battle
-"""
-Simple assumption:
-    Team0 is always friendly and Team1 is enemy.
-    Team0 will always be offensive
-    Enemy has random strategy
-    Enemy will act from first role to last role in sequence
-"""
-
 
 class Session:
     def __init__(self, map_file: str, unit_files: [str], unit_teams: [int]):
@@ -59,9 +51,24 @@ class Session:
                 self.units.pop(unit_id)
         return
 
-    def operate(self, source_unit_id, dx, dy, target_unit_id):
+    def operate(self, action: (int, int, int, int, int, int)):
+
+        source_unit_x: int = action[0]
+        source_unit_y: int = action[1]
+        dx: int = action[2]
+        dy: int = action[3]
+        target_unit_dx: int = action[4]
+        target_unit_dy: int = action[5]
+
+        source_unit_id = self.map.unit_grid[source_unit_y, source_unit_x]
         source_unit = self.units[source_unit_id]
         self.map.move_unit(source_unit, x=source_unit.x + dx, y=source_unit.y + dy)
+
+        if target_unit_dx == 0 and target_unit_dy == 0:
+            return
+        target_unit_id = self.map.unit_grid[target_unit_dy + source_unit.y, 
+                                            target_unit_dx + source_unit.x]
+        
         target_unit = self.units[target_unit_id]
         battle.act(source_unit, target_unit)
         self.active_unit_ids.remove(source_unit_id)
@@ -78,25 +85,37 @@ class Session:
                 self.current_round += 1
         return
 
-    def get_available_actions(self) -> [(int, int, int, int)]:
+    def get_available_actions(self) -> [(int, int, int, int, int, int)]:
         """
 
         :return: [source_unit_id, dx, dy, target_unit_id]
         """
-        action_list: [(int, int, int, int)] = []
+        action_list: [(int, int, int, int, int, int)] = []
         for unit_id, unit in self.units.items():
             reachable_locations = self.map.get_reachable_locations(unit)
             for (x, y) in reachable_locations:
+                # stand by
+                action_list.append((unit.x, unit.y, x - unit.x, y - unit.y, 0, 0))
                 # attack
                 target_unit_ids = self.map.find_units_by_distance(x=x, y=y, distance=unit.attack_range)
                 for target_id in target_unit_ids:
-                    if self.units[target_id].team == unit.team:
+                    target_unit = self.units[target_id]
+                    if target_unit.team == unit.team:
                         continue
-                    action_list.append((unit_id, x - unit.x, y - unit.y, target_id))
+                    target_dx = target_unit.x - x
+                    target_dy = target_unit.y - y
+                    action_list.append((unit.x, unit.y, x - unit.x, y - unit.y, 
+                                        target_dx,
+                                        target_dy))
                 # support
                 target_unit_ids = self.map.find_units_by_distance(x=x, y=y, distance=unit.support_range)
                 for target_id in target_unit_ids:
-                    if self.units[target_id].team != unit.team:
+                    target_unit = self.units[target_id]
+                    if target_unit.team != unit.team:
                         continue
-                    action_list.append((unit_id, x - unit.x, y - unit.y, target_id))
+                    target_dx = target_unit.x - x
+                    target_dy = target_unit.y - y
+                    action_list.append((unit.x, unit.y, x - unit.x, y - unit.y, 
+                                        target_dx,
+                                        target_dy))
         return action_list

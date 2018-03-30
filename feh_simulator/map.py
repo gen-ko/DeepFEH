@@ -111,6 +111,8 @@ class Map(object):
         found_unit_ids = set()
         for x0 in range(x - distance, x + distance + 1):
             for y0 in range(y - distance, y + distance + 1):
+                if x0 < 0 or x0 >= self.ncols or y0 < 0 or y0>= self.nrows:
+                    continue
                 if abs(x0 - x) + abs(y0 - y) == distance:
                     if self.unit_grid[y0, x0] != 0:
                         found_unit_ids.add(self.unit_grid[y0, x0])
