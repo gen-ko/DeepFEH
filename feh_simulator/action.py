@@ -10,13 +10,13 @@ class Action:
     def get_values(self):
         return np.array([self.src_unit.id,
                          self.destination[0],
-                         self.destination[0],
+                         self.destination[1],
                          self.des_unit if self.des_unit is not None else -1])
 
     def __repr__(self):
-        return "src_Id is {}, destination is {}, attack Id is {}".format(self.src_unit.index, self.destination,
-                                                                         self.des_unit.index if self.des_unit else None)
+        return "src_Id is {}, destination is {}, attack Id is {} \n".format(self.src_unit.id, self.destination,
+                                                                         self.des_unit.id if self.des_unit else None)
 
     def __str__(self):
-        return "src_Id is {}, destination is {}, attack Id is {}".format(self.src_unit.index, self.destination,
-                                                                         self.des_unit.index if self.des_unit else None)
+        return "src_Id is {}, destination is {}, attack Id is {} \n".format(self.src_unit.id, self.destination,
+                                                                         self.des_unit.id if self.des_unit else None)

@@ -49,6 +49,8 @@ class Map(object):
     def move_unit(self, unit: Unit, x: int, y: int):
         self.unit_grid[unit.y, unit.x] = 0
         self.unit_grid[y, x] = unit.id
+        unit.x = x
+        unit.y = y
 
     def remove_unit(self, x: int, y: int):
         self.unit_grid[y, x] = 0
