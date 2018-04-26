@@ -130,10 +130,13 @@ class Session:
                 return False, -1
         return True, winner_id
     
-  
     def current_state(self) -> []:
         state = [self.map.terrain_grid.flat, self.map.unit_grid.flat]
         for _, unit in self.units.items():
             state.append(unit.get_attributes())
-        state = [item for sublist in state for item in sublist]
-        return state
+        for _ in range(8 - self.units.__len__()):
+            state.append([0, 0, 0, 0, 0,   0, 0, 0, 0,0,   0, 0, 0, 0])
+        return [item for sublist in state for item in sublist]
+    
+    def render(self):
+        self.map.render()
