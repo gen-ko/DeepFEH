@@ -141,4 +141,18 @@ class Unit(object):
         return
 
     def get_attributes(self):
-        return self.max_hp, self.cur_hp, self.atk, self.spd, self.defence, self.res, self.attack_range, self.movement_range
+        return [self.max_hp, \
+               self.cur_hp,\
+               self.atk, \
+               self.spd, \
+               self.defence,\
+               self.res, \
+               self.attack_range,\
+               self.movement_range,\
+               self.color,\
+               self.weapon_type,\
+               self.damage_type,\
+               self.support_range,\
+               self.is_alive,\
+               self.team]
+               

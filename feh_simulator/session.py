@@ -123,11 +123,18 @@ class Session:
     def is_session_end(self) ->  (bool, int):
         # return the id of the winner team
         winner_id = -1
-        for unit in self.units:
+        for _, unit in self.units.items():
             if winner_id == -1:
                 winner_id = unit.team
             if unit.team != winner_id:
                 return False, -1
         return True, winner_id
     
+    
+    
     def current_state(self) -> []:
+        state = [self.map.terrain_grid.flat, self.map.unit_grid.flat]
+        for _, unit in self.units.items():
+            state.append(unit.get_attributes())
+        state = [item for sublist in state for item in sublist]
+        return state
