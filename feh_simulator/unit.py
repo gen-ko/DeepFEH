@@ -108,7 +108,8 @@ class Unit(object):
         self.movement_range = skill.MOVEMENT_TYPE_TO_MOVEMENT_RANGE[self.movement_type]
         self.attack_range = skill.WEAPON_TYPE_TO_ATTACK_RANGE[self.weapon_type]
         self.support_range = 1  # TODO
-        self.is_dead: bool = False
+        #self.is_dead: bool = False
+        self.is_alive: bool = True
         self.team: int = team
         return
 

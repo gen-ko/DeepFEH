@@ -23,7 +23,7 @@ def attack(a: Unit, b: Unit) -> None:
     
     if b.cur_hp <= 0:
         b.cur_hp = 0
-        b.is_dead = 1
+        b.is_alive = 0
         return
 
     # counter-attack
@@ -33,7 +33,7 @@ def attack(a: Unit, b: Unit) -> None:
         a.cur_hp -= max(0, (b.atk - a.res))
     if a.cur_hp <= 0:
         a.cur_hp = 0
-        a.is_dead = 1
+        a.is_alive = 0
         return
 
     # follow-attack
@@ -44,7 +44,7 @@ def attack(a: Unit, b: Unit) -> None:
             b.cur_hp -= max(0, (a.atk - b.res))
     if b.cur_hp <= 0:
         b.cur_hp = 0
-        b.is_dead = 1
+        b.is_alive = 0
         return
 
     # follow-counter-attack
@@ -55,7 +55,7 @@ def attack(a: Unit, b: Unit) -> None:
             a.cur_hp -= max(0, (b.atk - a.res))
     if a.cur_hp <= 0:
         a.cur_hp = 0
-        a.is_dead = 1
+        a.is_alive = 0
         return
 
     return
