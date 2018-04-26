@@ -109,6 +109,7 @@ class Session:
                                         target_dx,
                                         target_dy))
                 # support
+                """
                 target_unit_ids = self.map.find_units_by_distance(x=x, y=y, distance=unit.support_range)
                 for target_id in target_unit_ids:
                     target_unit = self.units[target_id]
@@ -119,6 +120,7 @@ class Session:
                     action_list.append((unit.x, unit.y, x - unit.x, y - unit.y, 
                                         target_dx,
                                         target_dy))
+                """
         return action_list
 
     def is_session_end(self) ->  (bool, int):
