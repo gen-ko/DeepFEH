@@ -130,8 +130,7 @@ class Session:
                 return False, -1
         return True, winner_id
     
-    
-    
+  
     def current_state(self) -> []:
         state = [self.map.terrain_grid.flat, self.map.unit_grid.flat]
         for _, unit in self.units.items():

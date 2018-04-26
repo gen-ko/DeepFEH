@@ -149,10 +149,10 @@ class Unit(object):
                self.res, \
                self.attack_range,\
                self.movement_range,\
-               self.color,\
-               self.weapon_type,\
-               self.damage_type,\
+               self.color.value,\
+               self.weapon_type.value,\
+               self.damage_type.value,\
                self.support_range,\
-               self.is_alive,\
+               int(self.is_alive),\
                self.team]
                
