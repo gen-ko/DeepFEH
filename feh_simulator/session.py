@@ -79,11 +79,11 @@ class Session:
         # clear dead units
         self.clear_units()
 
-        if not self.active_unit_ids:  # if active units list is empty
+        if self.active_unit_ids.__len__ == 0:  # if active units list is empty
             if self.current_turn == 1:
                 self.current_turn = 2
                 self.activate_team(team_id=2)
-            if self.current_turn == 1:
+            if self.current_turn == 2:
                 self.current_turn = 1
                 self.activate_team(team_id=1)
                 self.current_round += 1
