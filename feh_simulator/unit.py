@@ -108,7 +108,8 @@ class Unit(object):
         self.movement_range = skill.MOVEMENT_TYPE_TO_MOVEMENT_RANGE[self.movement_type]
         self.attack_range = skill.WEAPON_TYPE_TO_ATTACK_RANGE[self.weapon_type]
         self.support_range = 1  # TODO
-        self.is_dead: bool = False
+        #self.is_dead: bool = False
+        self.is_alive: bool = True
         self.team: int = team
         return
 
@@ -140,4 +141,18 @@ class Unit(object):
         return
 
     def get_attributes(self):
-        return self.max_hp, self.cur_hp, self.atk, self.spd, self.defence, self.res, self.attack_range, self.movement_range
+        return [self.max_hp, \
+               self.cur_hp,\
+               self.atk, \
+               self.spd, \
+               self.defence,\
+               self.res, \
+               self.attack_range,\
+               self.movement_range,\
+               self.color.value,\
+               self.weapon_type.value,\
+               self.damage_type.value,\
+               self.support_range,\
+               int(self.is_alive),\
+               self.team]
+               
