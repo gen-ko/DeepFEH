@@ -119,3 +119,13 @@ class Session:
                                         target_dx,
                                         target_dy))
         return action_list
+
+    def session_done(self) -> (bool, int):
+        winner = -1
+        for unit in self.units:
+            if winner == -1:
+                winner = unit.team
+            if winner != unit.team:
+                return (False, -1)
+        return (True, winner)
+
