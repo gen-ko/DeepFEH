@@ -45,10 +45,14 @@ class Session:
                 self.active_unit_ids.append(unit_id)
 
     def clear_units(self):
+        remove_list = []
         for unit_id, unit in self.units.items():
             if not unit.is_alive:
-                self.map.remove_unit(unit.x, unit.y)
-                self.units.pop(unit_id)
+                remove_list.append((unit_id, unit))
+                
+        for unit_id, unit in remove_list:
+            self.map.remove_unit(unit.x, unit.y)
+            self.units.pop(unit_id)
         return
 
     def operate(self, action: (int, int, int, int, int, int)):
