@@ -91,7 +91,8 @@ class Session:
         :return: [source_unit_id, dx, dy, target_unit_id]
         """
         action_list: [(int, int, int, int, int, int)] = []
-        for unit_id, unit in self.units.items():
+        for unit_id in self.active_unit_ids:
+            unit = self.units[unit_id]
             reachable_locations = self.map.get_reachable_locations(unit)
             for (x, y) in reachable_locations:
                 # stand by
@@ -130,10 +131,13 @@ class Session:
                 return False, -1
         return True, winner_id
     
-  
     def current_state(self) -> []:
         state = [self.map.terrain_grid.flat, self.map.unit_grid.flat]
         for _, unit in self.units.items():
             state.append(unit.get_attributes())
-        state = [item for sublist in state for item in sublist]
-        return state
+        for _ in range(8 - self.units.__len__()):
+            state.append([0, 0, 0, 0, 0,   0, 0, 0, 0,0,   0, 0, 0, 0])
+        return [item for sublist in state for item in sublist]
+    
+    def render(self):
+        self.map.render()
