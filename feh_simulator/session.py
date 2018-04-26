@@ -91,7 +91,8 @@ class Session:
         :return: [source_unit_id, dx, dy, target_unit_id]
         """
         action_list: [(int, int, int, int, int, int)] = []
-        for unit_id, unit in self.units.items():
+        for unit_id in self.active_unit_ids:
+            unit = self.units[unit_id]
             reachable_locations = self.map.get_reachable_locations(unit)
             for (x, y) in reachable_locations:
                 # stand by
