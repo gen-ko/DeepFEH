@@ -1,3 +1,5 @@
+import sys
+import random
 from feh_simulator.session import Session
 
 """
@@ -9,26 +11,26 @@ Simple assumption:
 """
 
 class Simulator:
-    def __init__(self, verbose=True, difficulty=1.0, team):
+    def __init__(self, verbose=True, difficulty=1.0):
         self.verbose = verbose
         self.difficulty = difficulty
         self.session = None
-        self.myTeam = team
+        self.team = 1
 
     def create_unit(self,map_file='./map_data/map_01.txt',
-                    unit_files=['./unit_data/unit_default.txt',
+                    unit_files=['./unit_data/unit03.txt',
                            './unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',],
+                           './unit_data/unit02.txt',
+                           './unit_data/unit02.txt',
+                           './unit_data/unit02.txt',],
                     unit_teams=[1, 1, 1, 1, 2, 2, 2, 2]):
         """
         customize unit as you want
         """
-        sess = Session(map_file, unit_files, unit_teams)
+        self.session = Session(map_file, unit_files, unit_teams)
 
     def get_action_space(self) -> [(int, int, int, int, int, int)]:
         """
@@ -52,50 +54,77 @@ class Simulator:
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
-        self.session.operate(a)
+        switch = self.session.operate(a)
         state = self.session.current_state()
         reward = 0
         done, winner = self.session.is_session_end()
-        if winner == self.team:
-            reward = 100
-            return state, reward, done
-        else:
-            reward = -100
-            return state, reward, done
-        actions = self.get_action_space()
-        if len(actions) == 0:
+        if winner != -1:
+            if winner == self.team:
+                reward = 100
+                return state, reward, done
+            else:
+                reward = -100
+                return state, reward, done
+
+        if switch:
             state, reward, done = self._AI()
         return state, reward, done
 
     def _AI(self):
+        switch = False
+        done = False
+        reward = 0
+        winner = -1
+        while(not switch and not done):
+            actions = self.session.get_available_actions()
+            a = None
+            if random.random() <= self.difficulty:
+                for a_ in actions:
+                    if a_[4] != 0 or a_[5] != 0:
+                        a = a_
+                        break
+            if a is None:
+                a = random.choice(actions)
+            switch = self.session.operate(a)
+            state = self.session.current_state()
+            done, winner = self.session.is_session_end()
+        if winner != -1:
+            if winner == self.team:
+                reward = 100
+                return state, reward, done
+            else:
+                reward = -100
+                return state, reward, done
+        return state, reward, done
 
+    def render(self):
+        self.session.render()
 
 
 def main(argv):
     simu = Simulator()
-    simu.create_unit(team=0, x=0, y=0)
-    simu.create_unit(team=1, x=4, y=4)
+    simu.create_unit()
     s, r, done = simu.reset()
     print_info(simu, r, done)
     while not done:
         action = simu.get_action_space()
         a = None
         for a_ in action:
-            if a_.des_unit is not None:
+            if a_[4] != 0 or a_[5] != 0:
                 a = a_
                 break
         if a is None:
             a = random.choice(action)
         s, r, done = simu.step(a)
-        print_info(simu, r, done)
         # print_info(simu, r, done)
     print_info(simu, r, done)
     s, r, done = simu.reset()
+    print_info(simu, r, done)
     while not done:
         action = simu.get_action_space()
         a = None
         for a_ in action:
-            if a_.des_unit is not None:
+            if a_[4] != 0 or a_[5] != 0:
                 a = a_
                 break
         if a is None:
@@ -106,9 +135,9 @@ def main(argv):
 
 
 def print_info(simu, r, done):
-    simu.map.render()
-    print(r)
-    print(done)
+    simu.session.render()
+    print("reward is {}".format(r))
+    print("session over? {}".format(done))
 
 
 if __name__ == "__main__":
