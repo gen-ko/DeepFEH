@@ -50,7 +50,6 @@ class Session:
         for unit_id, unit in self.units.items():
             if not unit.is_alive:
                 remove_list.append((unit_id, unit))
-
         for unit_id, unit in remove_list:
             self.map.remove_unit(unit.x, unit.y)
             self.units.pop(unit_id)
