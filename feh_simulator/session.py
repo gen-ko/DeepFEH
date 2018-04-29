@@ -20,6 +20,7 @@ class Session:
         return
 
     def reset(self):
+        self.active_unit_ids = []
         self.map = Map(map_file=self.map_file)
         team1_start_location = self.map.team_1_start_location
         team2_start_location = self.map.team_2_start_location
@@ -45,14 +46,19 @@ class Session:
                 self.active_unit_ids.append(unit_id)
 
     def clear_units(self):
+        remove_list = []
         for unit_id, unit in self.units.items():
             if not unit.is_alive:
-                self.map.remove_unit(unit.x, unit.y)
-                self.units.pop(unit_id)
+                remove_list.append((unit_id, unit))
+
+        for unit_id, unit in remove_list:
+            self.map.remove_unit(unit.x, unit.y)
+            self.units.pop(unit_id)
         return
 
-    def operate(self, action: (int, int, int, int, int, int)):
+    def operate(self, action: (int, int, int, int, int, int)) -> bool:
 
+        switch = False
         source_unit_x: int = action[0]
         source_unit_y: int = action[1]
         dx: int = action[2]
@@ -65,7 +71,7 @@ class Session:
         self.map.move_unit(source_unit, x=source_unit.x + dx, y=source_unit.y + dy)
 
         if target_unit_dx == 0 and target_unit_dy == 0:
-            return
+            return switch
         target_unit_id = self.map.unit_grid[target_unit_dy + source_unit.y, 
                                             target_unit_dx + source_unit.x]
         
@@ -74,16 +80,16 @@ class Session:
         self.active_unit_ids.remove(source_unit_id)
         # clear dead units
         self.clear_units()
-
         if not self.active_unit_ids:  # if active units list is empty
+            switch = True
             if self.current_turn == 1:
                 self.current_turn = 2
                 self.activate_team(team_id=2)
-            if self.current_turn == 1:
+            elif self.current_turn == 2:
                 self.current_turn = 1
                 self.activate_team(team_id=1)
                 self.current_round += 1
-        return
+        return switch
 
     def get_available_actions(self) -> [(int, int, int, int, int, int)]:
         """
@@ -109,6 +115,7 @@ class Session:
                                         target_dx,
                                         target_dy))
                 # support
+                """
                 target_unit_ids = self.map.find_units_by_distance(x=x, y=y, distance=unit.support_range)
                 for target_id in target_unit_ids:
                     target_unit = self.units[target_id]
@@ -119,6 +126,7 @@ class Session:
                     action_list.append((unit.x, unit.y, x - unit.x, y - unit.y, 
                                         target_dx,
                                         target_dy))
+                """
         return action_list
 
     def is_session_end(self) ->  (bool, int):
