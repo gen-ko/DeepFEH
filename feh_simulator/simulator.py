@@ -10,6 +10,15 @@ Simple assumption:
     Enemy will act from first role to last role in sequence
 """
 
+
+m2a = {0: (0, 2), 1: (-1, 1), 2: (0, 1), 3: (1, 1),
+       4: (-2, 0), 5: (-1, 0), 6: (0, -2), 7: (1,0), 8:(2,0),
+       9:(-1,-1), 10:(0, -1), 11:(1,-1), 12:(0, 0)}
+
+a2m = {(0, 2): 0, (-1, 1): 1, (0, 1):2, (1, 1):3,
+       (-2,0):4, (-1,0):5, (0, -2):6, (1,0):7, (2,0):8,
+       (-1,-1):9, (0,-1):10, (1,-1):11, (0,0):12   }
+
 class Simulator:
     def __init__(self, verbose=True, difficulty=1.0):
         self.verbose = verbose
@@ -37,7 +46,10 @@ class Simulator:
         returns a list of actions that user can act 
         """
         actions = self.session.get_available_actions()
-        return actions
+        ais = []
+        for a in actions:
+            ais.append(self._reverse_translate_action(a))
+        return ais
 
     # Not finished
     def reset(self) -> ([int], int, bool):
@@ -50,7 +62,7 @@ class Simulator:
         done, winner = self.session.is_session_end()
         return state, reward, done
 
-    def step(self, a:[int, int, int, int, int, int]) -> ([int], int, bool):
+    def _step(self, a:[int, int, int, int, int, int]) -> ([int], int, bool):
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
@@ -69,6 +81,25 @@ class Simulator:
         if switch:
             state, reward, done = self._AI()
         return state, reward, done
+    
+    
+    def _translate_action(self, a:int) -> [int, int, int, int, int, int]:
+        unit = self.session.units[a % 8]
+        x = unit.x
+        y = unit.y
+        dx, dy = m2a[int(a / 8) % 13]
+        dtx, dty = m2a[int(a / 8 * 13)]
+        return [x, y, dx, dy, dtx, dty]
+    
+    def _reverse_translate_action(self, a: [int, int, int, int, int, int]) -> int:
+        unitid = self.map.unit_grid(a[0], a[1])
+        d1 = a2m[(a[2], a[3])]
+        d2 = a2m[(a[4], a[5])]
+        return unitid + d1 * 8 + d2 * 8 * 13
+        
+    def step(self, a:int) -> ([int, int, bool, int]):
+        x, y, dx, dy, dtx, dty = self._translate_action(a)
+        return self._step([x, y, dx, dy, dtx, dty])
 
     def _AI(self):
         switch = False

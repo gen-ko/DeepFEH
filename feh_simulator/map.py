@@ -19,7 +19,7 @@ class Map(object):
         self.ncols = int(content[1])
 
         self.terrain_grid = np.zeros(shape=(self.nrows, self.ncols), dtype=int)
-        self.unit_grid = np.zeros(shape=(self.nrows, self.ncols), dtype=int)
+        self.unit_grid = np.zeros(shape=(self.nrows, self.ncols), dtype=int)   # map to unitid
 
         for r in range(self.nrows):
             tmp = content[r + 2].split(' ')

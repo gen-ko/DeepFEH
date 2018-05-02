@@ -66,20 +66,8 @@ class Reinforce(object):
         return
 
     def generate_episode_fast(self):
-        s = self.env.reset()
-        done = False
-        states = []
-        rewards = []
-        predict_fn = self.model.predict
-        step_fn = self.env.step
-        s_append_fn = states.append
-        r_append_fn = rewards.append
-        while not done:
-            a = predict_fn(s.reshape([1, -1]))
-            s_append_fn(s)
-            s, r, done, _ = step_fn(a)
-            r_append_fn(r)
-        return states, rewards
+        s, _, r = self.generate_episode()
+        return s, r
 
     def generate_episode(self):
         s = self.env.reset()
@@ -93,31 +81,15 @@ class Reinforce(object):
         r_append_fn = rewards.append
         a_append_fn = actions.append
         while not done:
-            a = predict_fn(s.reshape([1, -1]))
+            p1, p2, p3, p4, p5, p6 = predict_fn(s.reshape([1, -1]))
+            avas = self.env.get_available_actions()
+            
             a_append_fn(a)
             s_append_fn(s)
             s, r, done, _ = step_fn(a)
             r_append_fn(r)
         return states, actions, rewards
     
-    def generate_episode_render(self):
-        s = self.env.reset()
-        done = False
-        states = []
-        rewards = []
-        predict_fn = self.model.predict
-        step_fn = self.env.step
-        s_append_fn = states.append
-        r_append_fn = rewards.append
-        while not done:
-            self.env.render()
-            a = predict_fn(s.reshape([1, -1]))
-            s_append_fn(s)
-            s, r, done, _ = step_fn(a)
-            r_append_fn(r)
-        self.env.render()
-        return states, rewards
-
     def test(self):
         r = []
         for i in range(100):
@@ -130,17 +102,7 @@ class Reinforce(object):
         print('r =', mean, "+-", std)
         return mean, std
     
-    def test_render(self):
-        r = []
-        for i in range(100):
-            _, ri = self.generate_episode_render()
-            ri = sum(ri)
-            r.append(ri)
-        steps = len(r)
-        std = np.std(r)
-        mean = np.mean(r)
-        print('r =', mean, "+-", std, "steps", steps)
-        return mean, std
+
 
 
 def main():

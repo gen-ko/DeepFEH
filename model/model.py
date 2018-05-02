@@ -125,21 +125,18 @@ class PolicyNet(object):
                 name='p6')
         
         
+        
         self.dist1 = Categorical(probs=self.p1)
         self.dist2 = Categorical(probs=self.p2)
         self.dist3 = Categorical(probs=self.p3)
         self.dist4 = Categorical(probs=self.p4)
         self.dist5 = Categorical(probs=self.p5)
         self.dist6 = Categorical(probs=self.p6)
-        
-        
-        
-        #self.a = self.dist.sample()
+                
 
         self.G = tf.placeholder(dtype=tf.float32, shape=[None], name='G')
         self.a_acted = tf.placeholder(dtype=tf.int32, shape=[None], name='a_acted')
 
-        a_indices = tf.stack([tf.range(tf.shape(self.a_acted)[0], dtype=tf.int32), self.a_acted], axis=1)
         
         self.a1 = tf.placeholder(dtype=tf.int8, shape=[None], name='a1')
         self.a2 = tf.placeholder(dtype=tf.int8, shape=[None], name='a2')

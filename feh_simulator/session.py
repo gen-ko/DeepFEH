@@ -12,7 +12,7 @@ class Session:
         self.unit_files = unit_files
         self.unit_teams = unit_teams
         self.map = None
-        self.units = {}
+        self.units = {}  # unitid -> unit
         self.current_turn = 0
         self.current_round = 0
         self.active_unit_ids: [int] = []
