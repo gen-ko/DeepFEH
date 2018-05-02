@@ -5,7 +5,6 @@ from collections import deque
 
 import numpy as np
 
-from feh_simulator.action import Action
 from feh_simulator.battle import attack
 from feh_simulator.unit import Unit
 from feh_simulator.skill import MovementType
