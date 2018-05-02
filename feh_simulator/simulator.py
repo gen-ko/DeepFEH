@@ -1,5 +1,6 @@
-import sys
 import random
+import sys
+
 from feh_simulator.session import Session
 
 """
@@ -10,22 +11,25 @@ Simple assumption:
     Enemy will act from first role to last role in sequence
 """
 
+
 class Simulator:
-    def __init__(self, verbose=True, difficulty=1.0):
+    def __init__(self, verbose=True, difficulty=1.0, max_steps=200):
         self.verbose = verbose
         self.difficulty = difficulty
         self.session = None
         self.team = 1
+        self.num_steps = 0
+        self.max_steps = max_steps
 
-    def create_unit(self,map_file='./map_data/map_01.txt',
-                    unit_files=['./unit_data/unit03.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit02.txt',
-                           './unit_data/unit02.txt',
-                           './unit_data/unit02.txt',],
+    def create_unit(self, map_file='/Users/shijiewu/github/DeepFEH/feh_simulator/map_data/map_default.txt',
+                    unit_files=['/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt',
+                                '/Users/shijiewu/github/DeepFEH/feh_simulator/unit_data/unit_default.txt', ],
                     unit_teams=[1, 1, 1, 1, 2, 2, 2, 2]):
         """
         customize unit as you want
@@ -48,9 +52,11 @@ class Simulator:
         state = self.session.current_state()
         reward = 0
         done, winner = self.session.is_session_end()
+
+        self.num_steps = 0
         return state, reward, done
 
-    def step(self, a:[int, int, int, int, int, int]) -> ([int], int, bool):
+    def step(self, a: [int, int, int, int, int, int]) -> ([int], int, bool):
         """
         Reset the FEH environment, returning current locations, reward and done.
         """
@@ -68,6 +74,11 @@ class Simulator:
 
         if switch:
             state, reward, done = self._AI()
+
+        self.num_steps += 1
+        if self.num_steps > self.max_steps:
+            self.reset()
+            return state, reward, True
         return state, reward, done
 
     def _AI(self):
@@ -75,7 +86,7 @@ class Simulator:
         done = False
         reward = 0
         winner = -1
-        while(not switch and not done):
+        while (not switch and not done):
             actions = self.session.get_available_actions()
             a = None
             if random.random() <= self.difficulty:
@@ -118,6 +129,7 @@ def main(argv):
         s, r, done = simu.step(a)
         # print_info(simu, r, done)
     print_info(simu, r, done)
+
     s, r, done = simu.reset()
     print_info(simu, r, done)
     while not done:

@@ -1,16 +1,13 @@
-
 from collections import deque
 
 import numpy as np
 import tensorflow as tf
-from deepqn import memory_replay
-from deepqn import model
+import memory_replay
+import model
 
 from feh_simulator.simulator import Simulator
 
 identifier = "FEH MLP agent"
-
-
 
 
 def train(args=None):
@@ -22,28 +19,22 @@ def train(args=None):
     for i in range(8):
         env.create_unit(i, int(i / 4))
 
-
-
     ns = 48
     na = 4
 
-    dqn = model.DeepQN(state_shape=(ns+na, ), num_actions=1)
+    dqn = model.DeepQN(state_shape=(ns + na,), num_actions=1)
     dqn.reset_sess(sess)
     dqn.set_train(lr=0.001)
 
     # set mr
-    mr = memory_replay.MemoryReplayer((ns + na, ), capacity=10000, enabled=True)
+    mr = memory_replay.MemoryReplayer((ns + na,), capacity=10000, enabled=True)
 
     score = deque([], maxlen=100)
 
-
     for epi in range(5000):
         s = env.reset()
-
         done = False
-
         rc = 0
-
         while not done:
             a = dqn.select_action_eps_greedy(get_eps(epi), s)
             a_ = a[0]
@@ -59,15 +50,16 @@ def train(args=None):
         if (epi + 1) % args.performance_plot_interval == 0:
             print('train-r-mod reward avg: ', np.mean(score))
 
-
     return
 
 
 def get_eps(t):
-    return max(0.03, 0.6 - np.log10(100*t + 1) * 0.995)
+    return max(0.03, 0.6 - np.log10(100 * t + 1) * 0.995)
+
 
 def main():
     train()
+
 
 if __name__ == "__main__":
     main()
