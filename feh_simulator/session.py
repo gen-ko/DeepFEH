@@ -20,6 +20,7 @@ class Session:
         return
 
     def reset(self):
+        self.active_unit_ids = []
         self.map = Map(map_file=self.map_file)
         team1_start_location = self.map.team_1_start_location
         team2_start_location = self.map.team_2_start_location
@@ -83,7 +84,7 @@ class Session:
             if self.current_turn == 1:
                 self.current_turn = 2
                 self.activate_team(team_id=2)
-            if self.current_turn == 2:
+            elif self.current_turn == 2:
                 self.current_turn = 1
                 self.activate_team(team_id=1)
                 self.current_round += 1
