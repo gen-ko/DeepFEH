@@ -27,14 +27,14 @@ class Simulator:
         self.team = 1
 
     def create_unit(self,map_file='./map_data/map_01.txt',
-                    unit_files=['./unit_data/unit03.txt',
+                    unit_files=['./unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
                            './unit_data/unit_default.txt',
-                           './unit_data/unit02.txt',
-                           './unit_data/unit02.txt',
-                           './unit_data/unit02.txt',],
+                           './unit_data/unit_default.txt',
+                           './unit_data/unit_default.txt',
+                           './unit_data/unit_default.txt',],
                     unit_teams=[1, 1, 1, 1, 2, 2, 2, 2]):
         """
         customize unit as you want
@@ -84,7 +84,7 @@ class Simulator:
     
     
     def _translate_action(self, a:int) -> [int, int, int, int, int, int]:
-        unit = self.session.units[a % 8]
+        unit = self.session.units[a % 8 + 1]
         x = unit.x
         y = unit.y
         dx, dy = m2a[int(a / 8) % 13]
@@ -92,7 +92,7 @@ class Simulator:
         return [x, y, dx, dy, dtx, dty]
     
     def _reverse_translate_action(self, a: [int, int, int, int, int, int]) -> int:
-        unitid = self.session.map.unit_grid[a[1], a[0]]
+        unitid = self.session.map.unit_grid[a[1], a[0]] - 1
         d1 = a2m[(a[2], a[3])]
         d2 = a2m[(a[4], a[5])]
         return unitid + d1 * 8 + d2 * 8 * 13
@@ -149,8 +149,6 @@ def main(argv):
         if a is None:
             a = random.choice(action)
         s, r, done = simu.step(a)
-        print_info(simu, r, done)
-    print_info(simu, r, done)
     s, r, done = simu.reset()
     print_info(simu, r, done)
     while not done:

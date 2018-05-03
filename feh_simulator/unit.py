@@ -6,7 +6,7 @@ class Unit(object):
 
     @staticmethod
     def reset():
-        Unit.cnt = 0
+        Unit.cnt = 1
 
     def __init__(self, team: int = 0, unit_file: str = './unit_data/unit_default.txt'):
 
