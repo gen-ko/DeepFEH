@@ -84,7 +84,7 @@ class Simulator:
     
     
     def _translate_action(self, a:int) -> [int, int, int, int, int, int]:
-        unit = self.session.units[a % 8]
+        unit = self.session.units[a % 8] + 1
         x = unit.x
         y = unit.y
         dx, dy = m2a[int(a / 8) % 13]
@@ -92,7 +92,7 @@ class Simulator:
         return [x, y, dx, dy, dtx, dty]
     
     def _reverse_translate_action(self, a: [int, int, int, int, int, int]) -> int:
-        unitid = self.map.unit_grid(a[0], a[1])
+        unitid = self.map.unit_grid(a[0], a[1]) - 1
         d1 = a2m[(a[2], a[3])]
         d2 = a2m[(a[4], a[5])]
         return unitid + d1 * 8 + d2 * 8 * 13

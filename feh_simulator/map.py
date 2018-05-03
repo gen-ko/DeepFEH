@@ -125,7 +125,7 @@ class Map(object):
         for r in range(self.nrows):
             for c in range(self.ncols):
                 print(self.terrain_grid[r, c], sep='', end=':')
-                if self.unit_grid[r, c] >= 0:  # if the location is occupied by an unit, print the unit's id
+                if self.unit_grid[r, c] > 0:  # if the location is occupied by an unit, print the unit's id
                     print(self.unit_grid[r, c], sep='', end='  ')
                 else:
                     print('_', sep='', end='  ')
