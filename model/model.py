@@ -36,7 +36,7 @@ class PolicyNet(object):
         t3 = tf.layers.dense(
                 inputs=t2,
                 units=16,
-                activation=tf.nn.relu,
+                activation=tf.nn.sigmoid,
                 use_bias=True,
                 kernel_initializer=tf.keras.initializers.glorot_uniform(),
                 bias_initializer=tf.zeros_initializer(),
@@ -59,9 +59,13 @@ class PolicyNet(object):
                 trainable=True,
                 name='p')
         
+        
         self.ava = tf.placeholder(dtype=bool, shape=[None, 13*8*13], name='ava')
 
-        self.dist = Categorical(probs=self.p * tf.cast(self.ava, tf.float32))
+        self.p_unnorm = self.p * tf.cast(self.ava ,tf.float32)
+        self.p_norm = self.p_unnorm / (tf.reduce_sum(self.p_unnorm, axis=1))
+
+        self.dist = Categorical(probs=self.p_norm)
         self.a = self.dist.sample()
 
         self.G = tf.placeholder(dtype=tf.float32, shape=[None], name='G')

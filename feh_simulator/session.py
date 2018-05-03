@@ -70,12 +70,13 @@ class Session:
         self.map.move_unit(source_unit, x=source_unit.x + dx, y=source_unit.y + dy)
 
         if target_unit_dx == 0 and target_unit_dy == 0:
-            return switch
-        target_unit_id = self.map.unit_grid[target_unit_dy + source_unit.y, 
-                                            target_unit_dx + source_unit.x]
-        
-        target_unit = self.units[target_unit_id]
-        battle.act(source_unit, target_unit)
+            pass
+        else:   
+            target_unit_id = self.map.unit_grid[target_unit_dy + source_unit.y, 
+                                                target_unit_dx + source_unit.x]
+            target_unit = self.units[target_unit_id]
+            battle.act(source_unit, target_unit)
+
         self.active_unit_ids.remove(source_unit_id)
         # clear dead units
         self.clear_units()
