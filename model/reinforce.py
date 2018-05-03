@@ -1,7 +1,6 @@
 import sys
 
 import numpy as np
-import gym
 import pickle
 import matplotlib
 import sys
@@ -159,7 +158,7 @@ class Reinforce(object):
 
 
 def main():
-    env = gym.make('FEH-v1')
+    #env = gym.make('FEH-v1')
 
     rf = Reinforce(env=env, lr=0.0001, gamma=0.99, save_path="./reinforce_luna-v2.h5", load=False)
     rf.train()

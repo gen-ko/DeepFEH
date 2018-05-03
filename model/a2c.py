@@ -1,5 +1,4 @@
 import numpy as np
-import gym
 
 import matplotlib
 matplotlib.use('Agg')
