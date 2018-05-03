@@ -131,6 +131,7 @@ class Session:
     def is_session_end(self) ->  (bool, int):
         # return the id of the winner team
         winner_id = -1
+        print(self.units.items())
         for _, unit in self.units.items():
             if winner_id == -1:
                 winner_id = unit.team

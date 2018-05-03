@@ -41,7 +41,7 @@ class Simulator:
         """
         self.session = Session(map_file, unit_files, unit_teams)
 
-    def get_action_space(self) -> [(int, int, int, int, int, int)]:
+    def get_action_space(self) -> [int]:
         """
         returns a list of actions that user can act 
         """
@@ -88,11 +88,11 @@ class Simulator:
         x = unit.x
         y = unit.y
         dx, dy = m2a[int(a / 8) % 13]
-        dtx, dty = m2a[int(a / 8 * 13)]
+        dtx, dty = m2a[int(a / (8 * 13))]
         return [x, y, dx, dy, dtx, dty]
     
     def _reverse_translate_action(self, a: [int, int, int, int, int, int]) -> int:
-        unitid = self.map.unit_grid(a[0], a[1])
+        unitid = self.session.map.unit_grid[a[1], a[0]]
         d1 = a2m[(a[2], a[3])]
         d2 = a2m[(a[4], a[5])]
         return unitid + d1 * 8 + d2 * 8 * 13
@@ -118,6 +118,7 @@ class Simulator:
                 a = random.choice(actions)
             switch = self.session.operate(a)
             state = self.session.current_state()
+            self.session.render()
             done, winner = self.session.is_session_end()
         if winner != -1:
             if winner == self.team:
@@ -141,13 +142,14 @@ def main(argv):
         action = simu.get_action_space()
         a = None
         for a_ in action:
+            a_ = simu._translate_action(a_)
             if a_[4] != 0 or a_[5] != 0:
-                a = a_
+                a = simu._reverse_translate_action(a_)
                 break
         if a is None:
             a = random.choice(action)
         s, r, done = simu.step(a)
-        # print_info(simu, r, done)
+        print_info(simu, r, done)
     print_info(simu, r, done)
     s, r, done = simu.reset()
     print_info(simu, r, done)
@@ -155,8 +157,9 @@ def main(argv):
         action = simu.get_action_space()
         a = None
         for a_ in action:
+            a_ = simu._translate_action(a_)
             if a_[4] != 0 or a_[5] != 0:
-                a = a_
+                a = simu._reverse_translate_action(a_)
                 break
         if a is None:
             a = random.choice(action)
