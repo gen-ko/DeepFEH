@@ -1,7 +1,6 @@
 import sys
 
 import numpy as np
-import gym
 import pickle
 import matplotlib
 import sys
