@@ -97,7 +97,15 @@ class Reinforce(object):
         a_append_fn = actions.append
         while not done:
             ava = self.env.ava()
+            
             a = predict_fn(s.reshape([1, -1]), ava.reshape([1, -1]))
+            if a >= 1352:
+                p, p_norm = self.model.sess.run([self.model.p, self.model.p_norm], 
+                                                {self.model.s: s.reshape([1, -1]),
+                                                       self.model.ava: ava.reshape([1, -1])})
+                print(a)
+                print(ava)
+                print(sum(ava))
             a_append_fn(a)
             s_append_fn(s)
             avas.append(ava)

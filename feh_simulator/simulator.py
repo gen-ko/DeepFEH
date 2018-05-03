@@ -34,7 +34,7 @@ class Simulator:
         self.create_unit()
         return
 
-    def create_unit(self, map_file=path + ('/map_data/map_01.txt'),
+    def create_unit(self, map_file=path + ('/map_data/map_default.txt'),
                     unit_files=[path + ('/unit_data/unit_default.txt'),
                            path+'/unit_data/unit_default.txt',
                            path+'/unit_data/unit_default.txt',
@@ -83,14 +83,14 @@ class Simulator:
         """
         switch = self.session.operate(a)
         state = self.session.current_state()
-        reward = 0
+        reward = 0.0
         done, winner = self.session.is_session_end()
         if winner != -1:
             if winner == self.team:
-                reward = 100
+                reward = 100.0
                 return state, reward, done, None
             else:
-                reward = -100
+                reward = -100.0
                 return state, reward, done, None
 
         if switch:
@@ -103,14 +103,20 @@ class Simulator:
         x = unit.x
         y = unit.y
         dx, dy = m2a[int(a / 8) % 13]
-        dtx, dty = m2a[int(a / (8 * 13))]
+        try:
+            dtx, dty = m2a[int(a / (8 * 13))]
+        except KeyError:
+            print('a:', a)
         return [x, y, dx, dy, dtx, dty]
     
     def _reverse_translate_action(self, a: [int, int, int, int, int, int]) -> int:
         unitid = self.session.map.unit_grid[a[1], a[0]] - 1
         d1 = a2m[(a[2], a[3])]
         d2 = a2m[(a[4], a[5])]
-        return unitid + d1 * 8 + d2 * 8 * 13
+        aa = unitid + d1 * 8 + d2 * 8 * 13
+        if aa >= 1352:
+            raise KeyError('fuc')
+        return aa
         
     def step(self, a:int) -> [int, int, bool, int]:
         x, y, dx, dy, dtx, dty = self._translate_action(a)
@@ -119,7 +125,7 @@ class Simulator:
     def _AI(self):
         switch = False
         done = False
-        reward = 0
+        reward = 0.0
         winner = -1
         while(not switch and not done):
             actions = self.session.get_available_actions()
@@ -131,17 +137,18 @@ class Simulator:
                         break
             if a is None:
                 a = random.choice(actions)
+            #self.session.render()
+            
             switch = self.session.operate(a)
             state = self.session.current_state()
-            self.session.render()
             done, winner = self.session.is_session_end()
         if winner != -1:
             if winner == self.team:
-                reward = 100
-                return state, reward, done
+                reward = 100.0
+                return state, reward, done, _
             else:
-                reward = -100
-                return state, reward, done
+                reward = -100.0
+                return state, reward, done, _
         return state, reward, done, _
 
     def render(self):
