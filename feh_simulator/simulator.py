@@ -1,7 +1,8 @@
 import sys
 import random
 from feh_simulator.session import Session
-
+import numpy as np
+import os
 """
 Simple assumption:
     Team0 is always friendly and Team1 is enemy.
@@ -19,22 +20,29 @@ a2m = {(0, 2): 0, (-1, 1): 1, (0, 1):2, (1, 1):3,
        (-2,0):4, (-1,0):5, (0, -2):6, (1,0):7, (2,0):8,
        (-1,-1):9, (0,-1):10, (1,-1):11, (0,0):12   }
 
+path, _ = os.path.split(__file__)
+
+
 class Simulator:
     def __init__(self, verbose=True, difficulty=1.0):
         self.verbose = verbose
         self.difficulty = difficulty
         self.session = None
         self.team = 1
+        self.observation_space_shape = (208, 0)
+        self.action_space_n = 13 * 13 * 8
+        self.create_unit()
+        return
 
-    def create_unit(self,map_file='./map_data/map_01.txt',
-                    unit_files=['./unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',
-                           './unit_data/unit_default.txt',],
+    def create_unit(self, map_file=path + ('/map_data/map_01.txt'),
+                    unit_files=[path + ('/unit_data/unit_default.txt'),
+                           path+'/unit_data/unit_default.txt',
+                           path+'/unit_data/unit_default.txt',
+                           path+'/unit_data/unit_default.txt',
+                           path+'/unit_data/unit_default.txt',
+                           path+'/unit_data/unit_default.txt',
+                           path+'/unit_data/unit_default.txt',
+                           path+'/unit_data/unit_default.txt',],
                     unit_teams=[1, 1, 1, 1, 2, 2, 2, 2]):
         """
         customize unit as you want
@@ -50,9 +58,16 @@ class Simulator:
         for a in actions:
             ais.append(self._reverse_translate_action(a))
         return ais
+    
+    def ava(self) -> np.ndarray:
+        ais = self.get_action_space()
+        ava = np.zeros(shape=(13*8*13,), dtype=bool)
+        for a in ais:
+            ava[a] = 1
+        return ava
 
     # Not finished
-    def reset(self) -> ([int], int, bool):
+    def reset(self) -> [int]:
         """
         Reset the FEH environment, returning current state, reward and done.
         """
@@ -60,7 +75,7 @@ class Simulator:
         state = self.session.current_state()
         reward = 0
         done, winner = self.session.is_session_end()
-        return state, reward, done
+        return np.array(state)
 
     def _step(self, a:[int, int, int, int, int, int]) -> ([int], int, bool):
         """
@@ -73,14 +88,14 @@ class Simulator:
         if winner != -1:
             if winner == self.team:
                 reward = 100
-                return state, reward, done
+                return state, reward, done, None
             else:
                 reward = -100
-                return state, reward, done
+                return state, reward, done, None
 
         if switch:
-            state, reward, done = self._AI()
-        return state, reward, done
+            state, reward, done, _ = self._AI()
+        return np.array(state), reward, done, None
     
     
     def _translate_action(self, a:int) -> [int, int, int, int, int, int]:
@@ -97,7 +112,7 @@ class Simulator:
         d2 = a2m[(a[4], a[5])]
         return unitid + d1 * 8 + d2 * 8 * 13
         
-    def step(self, a:int) -> ([int, int, bool, int]):
+    def step(self, a:int) -> [int, int, bool, int]:
         x, y, dx, dy, dtx, dty = self._translate_action(a)
         return self._step([x, y, dx, dy, dtx, dty])
 
@@ -127,17 +142,16 @@ class Simulator:
             else:
                 reward = -100
                 return state, reward, done
-        return state, reward, done
+        return state, reward, done, _
 
     def render(self):
         self.session.render()
 
 
-def main(argv):
+def main():
     simu = Simulator()
     simu.create_unit()
     s, r, done = simu.reset()
-    print_info(simu, r, done)
     while not done:
         action = simu.get_action_space()
         a = None
@@ -150,7 +164,6 @@ def main(argv):
             a = random.choice(action)
         s, r, done = simu.step(a)
     s, r, done = simu.reset()
-    print_info(simu, r, done)
     while not done:
         action = simu.get_action_space()
         a = None
@@ -162,8 +175,12 @@ def main(argv):
         if a is None:
             a = random.choice(action)
         s, r, done = simu.step(a)
-        # print_info(simu, r, done)
-    print_info(simu, r, done)
+
+
+def make(s: str) -> Simulator:
+    if s == 'FEH-v1':
+        return Simulator(verbose=False)
+    return None
 
 
 def print_info(simu, r, done):
@@ -173,4 +190,4 @@ def print_info(simu, r, done):
 
 
 if __name__ == "__main__":
-    main(sys.argv)
+    main()
