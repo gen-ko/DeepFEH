@@ -11,8 +11,6 @@ if sys.version_info < MIN_PYTHON:
     sys.exit("Python %s.%s or later is required.\n" % MIN_PYTHON)
 
 
-matplotlib.use('Agg')
-import matplotlib.pyplot as plt
 
 
 class Reinforce(object):

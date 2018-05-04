@@ -1,2 +1,0 @@
-model_checkpoint_path: "a2c_critic_v2-n50.h5"
-all_model_checkpoint_paths: "a2c_critic_v2-n50.h5"
