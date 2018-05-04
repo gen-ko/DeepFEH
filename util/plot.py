@@ -48,7 +48,8 @@ def plot_data(save_path, K, mean, std):
     plt.xlabel('Episode')
     plt.ylabel('Cumulative Reward')
     x = np.arange(0, len(mean) * K, K)
-    plt.errorbar(x=x, y=mean, yerr=std)
+    #plt.errorbar(x=x, y=mean, yerr=std)
+    plt.plot(x, mean)
     plt.savefig(save_path)
     return 
                 
