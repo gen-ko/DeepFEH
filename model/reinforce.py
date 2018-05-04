@@ -2,9 +2,9 @@ import sys
 
 import numpy as np
 import pickle
-import matplotlib
-import sys
 from model import PolicyNet
+import feh_simulator.simulator as gym
+
 
 MIN_PYTHON = (3, 6)
 if sys.version_info < MIN_PYTHON:
@@ -158,9 +158,11 @@ class Reinforce(object):
 
 
 def main():
-    #env = gym.make('FEH-v1')
-
-    rf = Reinforce(env=env, lr=0.0001, gamma=0.99, save_path="./reinforce_luna-v2.h5", load=False)
+    env = gym.make('FEH-v1')
+    n = 50
+    rf = Reinforce(env=env, lr=0.0001,  gamma=0.99,
+              save_path="./saved_model/rf_policy-v2-n{}.h5".format(n),
+              load=False)
     rf.train()
     return
 
