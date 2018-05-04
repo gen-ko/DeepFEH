@@ -10,13 +10,10 @@ def load_data(data_path, data_mode):
         contents = f.readlines()
     mean = []
     std = []
-    K = 0
+    K = 500
         
     if data_mode == 'q2':
         line = contents[0].strip('\n').split(sep=' ')
-        assert line[0] == 'K'
-        assert line[1] == '='
-        K = int(line[2])
     
         for line in contents[1:-1]:
             line = line.strip('\n').split(sep=' ')
@@ -27,9 +24,6 @@ def load_data(data_path, data_mode):
                 std.append(float(line[4]))
     elif data_mode == 'q3':
         line = contents[0].strip('\n').split(sep=' ')
-        assert line[0] == 'K'
-        assert line[1] == '='
-        K = int(line[2])
 
         for line in contents[1:-1]:
             line = line.strip('\n').split(sep=' ')
@@ -62,9 +56,9 @@ def plot_data(save_path, K, mean, std):
 def parse_args():
     # Command-line flags are defined here.
     parser = argparse.ArgumentParser()
-    parser.add_argument('--data_path', dest='data_path', type=str, default='./saved_data/q2_train.txt')
-    parser.add_argument('--data_mode', dest='data_mode', type=str, default='q2')
-    parser.add_argument('--save_path', dest='save_path', type=str, default='./saved_figures/q2.png')
+    parser.add_argument('--data_path', dest='data_path', type=str, default='N/A')
+    parser.add_argument('--data_mode', dest='data_mode', type=str, default='q3')
+    parser.add_argument('--save_path', dest='save_path', type=str, default='N/A')
     return parser.parse_args()
 
 
@@ -73,6 +67,10 @@ def main():
     data_path = args.data_path
     data_mode = args.data_mode
     save_path = args.save_path
+    if data_path == 'N/A':
+        data_path = input(f'''data path: (current path: {__file__})''')
+    if save_path == 'N/A':
+        save_path = input(f'''save path: (current path: {__file__})''')
     data = load_data(data_path, data_mode)
     plot_data(save_path, *data)
     return
