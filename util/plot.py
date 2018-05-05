@@ -16,6 +16,10 @@ def load_data(data_path, data_mode):
         line = contents[0].strip('\n').split(sep=' ')
     
         for line in contents[1:-1]:
+            if line[0] == '/' and line[1] == '/':
+                continue
+            if line[0] == '#':
+                continue
             line = line.strip('\n').split(sep=' ')
             if line[0] == 'r':
                 assert line[1] == '='
