@@ -103,3 +103,10 @@ ENV/
 
 feh_simulator/.DS_Store
 .DS_Store
+model/saved_model/a2c_critic_v2-n50.h5.data-00000-of-00001
+model/saved_model/a2c_critic_v2-n50.h5.index
+model/saved_model/a2c_critic_v2-n50.h5.meta
+model/saved_model/a2c_policy-v2-n50.h5.data-00000-of-00001
+model/saved_model/a2c_policy-v2-n50.h5.index
+model/saved_model/a2c_policy-v2-n50.h5.meta
+model/saved_model/checkpoint
